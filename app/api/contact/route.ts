@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   try {
+
     const {
       nombre,
       telefono,
@@ -23,35 +25,24 @@ export async function POST(request: Request) {
       subject: "Nueva solicitud de presupuesto",
 
       html: `
-        <h2>📩 Nueva solicitud de presupuesto</h2>
+        <h2>Nueva solicitud de presupuesto</h2>
 
-        <hr>
+        <p><strong>Nombre:</strong> ${nombre}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Teléfono:</strong> ${telefono}</p>
+        <p><strong>Proyecto:</strong> ${servicio}</p>
 
-        <p><strong>👤 Nombre:</strong> ${nombre}</p>
-
-        <p><strong>📧 Correo:</strong> ${email}</p>
-
-        <p><strong>📞 Teléfono:</strong> ${telefono}</p>
-
-        <p><strong>🪵 Tipo de proyecto:</strong> ${servicio}</p>
-
-        <p><strong>📏 Medidas:</strong></p>
+        <p><strong>Medidas:</strong></p>
 
         <ul>
-          <li>Ancho: ${ancho} cm</li>
-          <li>Alto: ${alto} cm</li>
-          <li>Fondo: ${fondo} cm</li>
+          <li>Ancho: ${ancho}</li>
+          <li>Alto: ${alto}</li>
+          <li>Fondo: ${fondo}</li>
         </ul>
 
-        <p><strong>💰 Presupuesto aproximado:</strong> ${presupuesto}</p>
-
-        <p><strong>📝 Descripción del proyecto:</strong></p>
+        <p><strong>Presupuesto:</strong> ${presupuesto}</p>
 
         <p>${mensaje}</p>
-
-        <hr>
-
-        <p>Solicitud enviada desde la página web de <strong>Muebles del Sur</strong>.</p>
       `,
     });
 
@@ -62,8 +53,10 @@ export async function POST(request: Request) {
     console.error(error);
 
     return NextResponse.json(
-      { error: "Error al enviar el correo." },
+      { error: "Error enviando correo" },
       { status: 500 }
     );
+
   }
+
 }
