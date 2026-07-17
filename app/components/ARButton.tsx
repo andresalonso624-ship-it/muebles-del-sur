@@ -19,18 +19,16 @@ export default function ARButton({
 
     // Android
     if (/Android/i.test(ua)) {
-      const url = encodeURIComponent(
-        `${window.location.origin}${glb}`
-      );
+      const fileUrl = `${window.location.origin}${glb}`;
 
       window.location.href =
-        `intent://arvr.google.com/scene-viewer/1.0?file=${url}&mode=ar_preferred` +
+        `intent://arvr.google.com/scene-viewer/1.0?file=${fileUrl}&mode=ar_preferred` +
         "#Intent;scheme=https;package=com.google.ar.core;end;";
 
       return;
     }
 
-    // iPhone
+    // iPhone / iPad
     if (/iPhone|iPad|iPod/i.test(ua)) {
       window.location.href = `${window.location.origin}${usdz}`;
       return;
@@ -52,7 +50,7 @@ export default function ARButton({
       <QRModal
         open={mostrarQR}
         onClose={() => setMostrarQR(false)}
-        url={window.location.href}
+        url={typeof window !== "undefined" ? window.location.href : ""}
       />
     </>
   );
