@@ -136,11 +136,6 @@ export default async function ModeloPage({
 
             </div>
 
-            <button
-              className="mt-12 rounded-2xl bg-[#A36A33] py-5 text-lg font-bold text-white transition hover:bg-[#8B5A2B]"
-            >
-              📱 Ver en mi espacio
-            </button>
 
 <ARButton
   glb={modelo.modelo}

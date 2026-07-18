@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +23,12 @@ export default function RootLayout({
     <html lang="es" className={`${manrope.variable} antialiased`}>
       <body className="min-h-screen bg-[#F8F5F1] text-[#2C241C] font-sans">
         {children}
+
+        <Script
+          type="module"
+          src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
