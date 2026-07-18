@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Manrope } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -29,6 +30,7 @@ export default function RootLayout({
           src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
           strategy="afterInteractive"
         />
+        <SpeedInsights />
       </body>
     </html>
   );
