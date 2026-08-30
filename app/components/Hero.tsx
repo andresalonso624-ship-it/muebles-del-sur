@@ -17,7 +17,7 @@ export default function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -55,7 +55,7 @@ export default function Hero() {
           }}
           transition={{
             opacity: {
-              duration: 1,
+              duration: 1.2,
             },
             scale: {
               duration: 1,
