@@ -157,7 +157,7 @@ export default function Contact() {
                   </p>
 
                   <p className="text-[13px] text-white/80">
-                    +34 641 17 68 21
+                    +34 646 61 33 59
                   </p>
                 </div>
 
@@ -178,7 +178,7 @@ export default function Contact() {
                   </p>
 
                   <p className="text-[14px] text-white/80">
-                    mueblesdelsur.es@gmail.com
+                    estanteriamsc@gmail.com
                   </p>
                 </div>
 
@@ -201,7 +201,7 @@ export default function Contact() {
                   <p className="text-[13px] leading-5 text-white/80">
                     Lunes a sábado
                     <br />
-                    9:00 AM - 8:00 PM
+                    9:00 AM - 18:00 PM
                   </p>
                 </div>
 
@@ -232,7 +232,7 @@ export default function Contact() {
               {/* WHATSAPP */}
 
               <a
-                href="https://wa.me/34641176821"
+                href="https://wa.me/34646613359"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
@@ -668,7 +668,7 @@ export default function Contact() {
               </p>
 
               <p className="text-[10px] leading-4 text-[#6C6C6C]">
-                Más de 10 años creando espacios
+                Más de 4 años creando espacios
               </p>
 
             </div>
