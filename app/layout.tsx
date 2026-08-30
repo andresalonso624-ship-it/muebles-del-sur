@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Manrope } from "next/font/google";
+import { Manrope, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
+});
+
+const dmSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-dm-serif",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${manrope.variable} antialiased`}>
+    <html
+      lang="es"
+      className={`${manrope.variable} ${dmSerif.variable} antialiased`}
+    >
       <body className="min-h-screen bg-[#F8F5F1] text-[#2C241C] font-sans">
         {children}
 

@@ -1,297 +1,702 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
+import {
+  User,
+  Pencil,
+  Phone,
+  Mail,
+  Clock,
+  MapPin,
+  Send,
+  Lock,
+  Headphones,
+  Ruler,
+  Award,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function Contact() {
-  const [formulario, setFormulario] = useState({
-    nombre: "",
-    email: "",
-    telefono: "",
-    servicio: "",
-    ancho: "",
-    alto: "",
-    fondo: "",
-    presupuesto: "",
-    mensaje: "",
-  });
-
-  const [enviando, setEnviando] = useState(false);
-  const [respuesta, setRespuesta] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setFormulario({
-      ...formulario,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
-
-    setEnviando(true);
-    setRespuesta("");
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formulario),
-      });
-
-      if (res.ok) {
-        setRespuesta(
-          "✅ Hemos recibido tu solicitud. Muy pronto nos pondremos en contacto contigo."
-        );
-
-        setFormulario({
-          nombre: "",
-          email: "",
-          telefono: "",
-          servicio: "",
-          ancho: "",
-          alto: "",
-          fondo: "",
-          presupuesto: "",
-          mensaje: "",
-        });
-      } else {
-        setRespuesta(
-          "❌ No fue posible enviar la solicitud."
-        );
-      }
-    } catch (error) {
-      setRespuesta(
-        "❌ Error al conectar con el servidor."
-      );
-    }
-
-    setEnviando(false);
-  };
-
   return (
-<section
-  id="contact"
-  className="bg-gradient-to-b from-white to-[#F7F2EC] py-24 lg:py-28"
->
-      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+    <section
+      id="contact"
+      className="scroll-mt-24 bg-[#F7F1E8] px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
+    >
+      <div className="mx-auto max-w-[1180px]">
 
-        {/* Encabezado */}
+        {/* =========================
+            ENCABEZADO
+        ========================= */}
 
-        <p className="text-center text-xs sm:text-sm uppercase tracking-[4px] sm:tracking-[8px] text-[#A36A33] font-semibold">
-          - CONTACTO -
-        </p>
+        <div className="mb-8 text-center lg:mb-9">
 
-        <h2 className="mt-4 text-3xl sm:text-4xl lg:text-6xl font-bold text-center text-[#2C241C]">
-          Hagamos realidad tu proyecto
-        </h2>
+          <div className="mb-3 flex items-center justify-center gap-4">
+            <span className="h-[2px] w-9 bg-[#B97820]" />
 
-        <p className="mt-6 max-w-3xl mx-auto text-center text-lg text-gray-600 leading-8">
-          Cuéntanos qué necesitas y nuestro equipo te asesorará para crear un
-          mueble completamente personalizado.
-        </p>
+            <span className="text-[16px] font-semibold uppercase tracking-[0.3em] text-[#B97820]">
+              CONTACTO
+            </span>
 
-      <div className="mt-16 grid grid-cols-1 items-stretch gap-10 lg:grid-cols-2">
-                  {/* Información */}
-          <div className="bg-white rounded-3xl shadow-xl p-10">
+            <span className="h-[2px] w-9 bg-[#B97820]" />
+          </div>
 
-            <h3 className="text-3xl font-bold text-[#2C241C]">
-              Estamos para ayudarte
-            </h3>
+          <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-[#2C241C] sm:text-4xl lg:text-[44px]">
+            Hagamos realidad tu proyecto
+          </h2>
 
-            <p className="mt-5 text-gray-600 leading-8">
-              Diseñamos cocinas, armarios, puertas, oficinas,
-              muebles de salon, estanterías, tiendas y todo tipo
-              de muebles a medida.
-              Escríbenos y recibe asesoría sin compromiso.
-            </p>
+          <p className="mx-auto mt-2 max-w-[650px] text-sm leading-6 text-[#52627A] sm:text-[15px]">
+            Cuéntanos qué necesitas y nuestro equipo te asesorará para crear
+            un mueble completamente personalizado.
+          </p>
 
-            <div className="mt-10 space-y-8">
+        </div>
 
-              <div>
-                <h4 className="text-xl font-bold text-[#2C241C]">
-                  📞 Teléfono
-                </h4>
 
-                <p className="text-gray-600 mt-2">
-                  +34 641 17 68 21
-                </p>
+        {/* =========================
+            CONTENIDO PRINCIPAL
+        ========================= */}
+
+        <div
+          className="
+            overflow-hidden
+            rounded-[24px]
+            border
+            border-[#E8DED0]
+            bg-[#FCFAF7]
+            shadow-[0_12px_40px_rgba(60,40,20,0.09)]
+            lg:grid
+            lg:grid-cols-[0.78fr_1.42fr]
+          "
+        >
+
+          {/* =========================
+              COLUMNA IZQUIERDA
+          ========================= */}
+
+          <div className="relative min-h-[560px] overflow-hidden">
+
+            {/* IMAGEN */}
+
+            <Image
+              src="/images/contacto.png"
+              alt="Diseño y fabricación de muebles a medida"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover object-center"
+            />
+
+            {/* CAPA OSCURA */}
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
+
+
+            {/* CONTENIDO */}
+
+            <div
+              className="
+                absolute
+                inset-x-0
+                bottom-0
+                z-10
+                p-7
+                sm:p-8
+              "
+            >
+
+              {/* TITULO */}
+
+              <div className="mb-4 flex items-center gap-3">
+
+                <div
+                  className="
+                    flex
+                    h-11
+                    w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#B97820]
+                    text-white
+                  "
+                >
+                  <User size={20} strokeWidth={1.8} />
+                </div>
+
+                <h3 className="text-[23px] font-bold text-white sm:text-[24px]">
+                  Estamos para ayudarte
+                </h3>
+
               </div>
 
-              <div>
-                <h4 className="text-xl font-bold text-[#2C241C]">
-                  📧 Correo
-                </h4>
 
-                <p className="text-gray-600 mt-2">
-                  mueblesdelsur.es@gmail.com
-                </p>
+              {/* DESCRIPCION */}
+
+              <p className="max-w-[430px] text-[15px] leading-6 text-white/90 sm:text-[16px]">
+                Diseñamos cocinas, armarios, puertas, oficinas, muebles de
+                salón, estanterías, tiendas y todo tipo de muebles a medida.
+                Escríbenos y recibe asesoría sin compromiso.
+              </p>
+
+
+              <div className="my-5 h-px bg-white/25" />
+
+
+              {/* TELEFONO */}
+
+              <div className="mb-3.5 flex items-center gap-3">
+
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+                  <Phone size={16} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[15px] font-semibold text-white">
+                    Teléfono
+                  </p>
+
+                  <p className="text-[13px] text-white/80">
+                    +34 641 17 68 21
+                  </p>
+                </div>
+
               </div>
 
-              <div>
-                <h4 className="text-xl font-bold text-[#2C241C]">
-                  🕒 Horario
-                </h4>
 
-                <p className="text-gray-600 mt-2">
-                  Lunes a sábado
-                  <br />
-                  9:00 AM - 18:00 PM
-                </p>
+              {/* CORREO */}
+
+              <div className="mb-3.5 flex items-center gap-3">
+
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+                  <Mail size={16} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[13px] font-semibold text-white">
+                    Correo
+                  </p>
+
+                  <p className="text-[14px] text-white/80">
+                    mueblesdelsur.es@gmail.com
+                  </p>
+                </div>
+
               </div>
+
+
+              {/* HORARIO */}
+
+              <div className="mb-3.5 flex items-center gap-3">
+
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+                  <Clock size={16} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[13px] leading-5 text-white/80">
+                    Horario
+                  </p>
+
+                  <p className="text-[13px] leading-5 text-white/80">
+                    Lunes a sábado
+                    <br />
+                    9:00 AM - 8:00 PM
+                  </p>
+                </div>
+
+              </div>
+
+
+              {/* UBICACION */}
+
+              <div className="flex items-center gap-3">
+
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+                  <MapPin size={16} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[13px] font-semibold text-white">
+                    Ubicación
+                  </p>
+
+                  <p className="text-[11px] text-white/75">
+                    Sevilla, España
+                  </p>
+                </div>
+
+              </div>
+
+
+              {/* WHATSAPP */}
+
+              <a
+                href="https://wa.me/34641176821"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                  mt-5
+                  flex
+                  h-12
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-[#25D366]
+                  text-sm
+                  font-semibold
+                  text-white
+                  shadow-md
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:bg-[#20BD5A]
+                  hover:shadow-lg
+                "
+              >
+                <span className="text-lg">◔</span>
+                Escribir por WhatsApp
+              </a>
 
             </div>
 
-            <a
-              href="https://wa.me/34641176821"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-10 inline-flex w-full justify-center rounded-xl bg-green-500 px-8 py-4 font-semibold text-white transition hover:bg-green-600 lg:w-auto"
-            >
-              Escribir por WhatsApp
-            </a>
+          </div>
+
+
+          {/* =========================
+              FORMULARIO
+          ========================= */}
+
+          <div className="bg-[#FCFAF7] p-6 sm:p-8 lg:p-9">
+
+            {/* TITULO */}
+
+            <div className="mb-6 flex items-center gap-3">
+
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#B97820]
+                  text-white
+                "
+              >
+                <Pencil size={19} strokeWidth={1.8} />
+              </div>
+
+              <h3 className="text-[20px] font-bold tracking-[-0.02em] text-[#171717]">
+                Cuéntanos sobre tu proyecto
+              </h3>
+
+            </div>
+
+
+            <form className="space-y-3.5">
+
+              {/* NOMBRE / EMAIL */}
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                <input
+                  type="text"
+                  placeholder="Nombre completo *"
+                  className="
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-[#E3D8CA]
+                    bg-white
+                    px-4
+                    text-[13px]
+                    text-[#2C241C]
+                    outline-none
+                    transition
+                    placeholder:text-[#999]
+                    focus:border-[#B97820]
+                    focus:ring-1
+                    focus:ring-[#B97820]
+                  "
+                />
+
+                <input
+                  type="email"
+                  placeholder="Correo electrónico *"
+                  className="
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-[#E3D8CA]
+                    bg-white
+                    px-4
+                    text-[13px]
+                    text-[#2C241C]
+                    outline-none
+                    transition
+                    placeholder:text-[#999]
+                    focus:border-[#B97820]
+                    focus:ring-1
+                    focus:ring-[#B97820]
+                  "
+                />
+
+              </div>
+
+
+              {/* TELEFONO */}
+
+              <input
+                type="tel"
+                placeholder="Teléfono *"
+                className="
+                  h-12
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E3D8CA]
+                  bg-white
+                  px-4
+                  text-[13px]
+                  outline-none
+                  transition
+                  placeholder:text-[#999]
+                  focus:border-[#B97820]
+                  focus:ring-1
+                  focus:ring-[#B97820]
+                "
+              />
+
+
+              {/* PROYECTO */}
+
+              <select
+                defaultValue=""
+                className="
+                  h-12
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E3D8CA]
+                  bg-white
+                  px-4
+                  text-[13px]
+                  text-[#52627A]
+                  outline-none
+                  transition
+                  focus:border-[#B97820]
+                  focus:ring-1
+                  focus:ring-[#B97820]
+                "
+              >
+
+                <option value="" disabled>
+                  Selecciona el tipo de proyecto *
+                </option>
+
+                <option>Cocina integral</option>
+                <option>Armario</option>
+                <option>Mueble de salón</option>
+                <option>Oficina</option>
+                <option>Tienda</option>
+                <option>Estantería</option>
+                <option>Mueble personalizado</option>
+                <option>Otro</option>
+
+              </select>
+
+
+              {/* MEDIDAS */}
+
+              <div className="grid grid-cols-3 gap-3">
+
+                <input
+                  type="text"
+                  placeholder="Ancho (cm)"
+                  className="
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-[#E3D8CA]
+                    bg-white
+                    px-4
+                    text-[13px]
+                    outline-none
+                    placeholder:text-[#999]
+                    focus:border-[#B97820]
+                  "
+                />
+
+                <input
+                  type="text"
+                  placeholder="Alto (cm)"
+                  className="
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-[#E3D8CA]
+                    bg-white
+                    px-4
+                    text-[13px]
+                    outline-none
+                    placeholder:text-[#999]
+                    focus:border-[#B97820]
+                  "
+                />
+
+                <input
+                  type="text"
+                  placeholder="Fondo (cm)"
+                  className="
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-[#E3D8CA]
+                    bg-white
+                    px-4
+                    text-[13px]
+                    outline-none
+                    placeholder:text-[#999]
+                    focus:border-[#B97820]
+                  "
+                />
+
+              </div>
+
+
+              {/* PRESUPUESTO */}
+
+              <select
+                defaultValue=""
+                className="
+                  h-12
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E3D8CA]
+                  bg-white
+                  px-4
+                  text-[13px]
+                  text-[#52627A]
+                  outline-none
+                  focus:border-[#B97820]
+                "
+              >
+
+                <option value="" disabled>
+                  Presupuesto aproximado
+                </option>
+
+                <option>Menos de 500 €</option>
+                <option>500 € - 1.000 €</option>
+                <option>1.000 € - 2.500 €</option>
+                <option>2.500 € - 5.000 €</option>
+                <option>Más de 5.000 €</option>
+
+              </select>
+
+
+              {/* MENSAJE */}
+
+              <textarea
+                placeholder="Cuéntanos sobre tu proyecto..."
+                rows={5}
+                className="
+                  w-full
+                  resize-none
+                  rounded-xl
+                  border
+                  border-[#E3D8CA]
+                  bg-white
+                  px-4
+                  py-3
+                  text-[13px]
+                  outline-none
+                  transition
+                  placeholder:text-[#999]
+                  focus:border-[#B97820]
+                  focus:ring-1
+                  focus:ring-[#B97820]
+                "
+              />
+
+
+              {/* BOTON */}
+
+              <button
+                type="submit"
+                className="
+                  flex
+                  h-12
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-[#B97820]
+                  text-sm
+                  font-semibold
+                  text-white
+                  shadow-sm
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:bg-[#9F6518]
+                  hover:shadow-md
+                "
+              >
+
+                <Send size={17} strokeWidth={1.8} />
+
+                Enviar solicitud
+
+              </button>
+
+
+              {/* SEGURIDAD */}
+
+              <div className="flex items-center justify-center gap-2 pt-1 text-[10px] text-[#888]">
+
+                <Lock size={12} />
+
+                <span>
+                  Tu información está segura. No compartimos tus datos.
+                </span>
+
+              </div>
+
+            </form>
 
           </div>
 
-          {/* Formulario */}
-          <div className="bg-white rounded-3xl shadow-xl p-10">
+        </div>
 
-<form
-  onSubmit={handleSubmit}
-  className="space-y-6"
-><input
-  type="text"
-  name="nombre"
-  value={formulario.nombre}
-  onChange={handleChange}
-  placeholder="Nombre completo"
-  required
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
-/>
 
-<input
-  type="email"
-  name="email"
-  value={formulario.email}
-  onChange={handleChange}
-  placeholder="Correo electrónico"
-  required
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
-/>
+        {/* =========================
+            VENTAJAS
+        ========================= */}
 
-<input
-  type="tel"
-  name="telefono"
-  value={formulario.telefono}
-  onChange={handleChange}
-  placeholder="Teléfono"
-  required
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
-/>
+        <div
+          className="
+            mt-4
+            grid
+            grid-cols-2
+            overflow-hidden
+            rounded-[18px]
+            border
+            border-[#E8DED0]
+            bg-[#FCFAF7]
+            shadow-[0_8px_25px_rgba(60,40,20,0.06)]
+            sm:grid-cols-4
+          "
+        >
 
-<select
-  name="servicio"
-  value={formulario.servicio}
-  onChange={handleChange}
-  required
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
->
-  <option value="">Selecciona el tipo de proyecto</option>
-  <option value="Cocina">Cocina</option>
-  <option value="Armario">Armario</option>
-  <option value="Puertas">Puertas</option>
-  <option value="Vestidor">Vestidor</option>
-  <option value="Oficina">Oficina</option>
-  <option value="Tienda">Tienda</option>
-  <option value="Muebles de salon">
-    Mueble de salon
-  </option>
-  <option value="Mueble personalizado">
-    Mueble personalizado
-  </option>
-  <option value="Otro">Otro</option>
-</select>
+          {/* RESPUESTA */}
 
-<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex items-center gap-3 border-b border-[#E8DED0] p-4 sm:border-b-0 sm:border-r">
 
-  <input
-    type="text"
-    name="ancho"
-    value={formulario.ancho}
-    onChange={handleChange}
-    placeholder="Ancho (cm)"
-    className="border border-gray-300 rounded-xl px-4 py-4"
-  />
+            <Headphones
+              size={25}
+              strokeWidth={1.6}
+              className="shrink-0 text-[#B97820]"
+            />
 
-  <input
-    type="text"
-    name="alto"
-    value={formulario.alto}
-    onChange={handleChange}
-    placeholder="Alto (cm)"
-    className="border border-gray-300 rounded-xl px-4 py-4"
-  />
+            <div>
 
-  <input
-    type="text"
-    name="fondo"
-    value={formulario.fondo}
-    onChange={handleChange}
-    placeholder="Fondo (cm)"
-    className="border border-gray-300 rounded-xl px-4 py-4"
-  />
+              <p className="text-xs font-bold text-[#2C241C]">
+                Respuesta rápida
+              </p>
 
-</div>
+              <p className="text-[10px] leading-4 text-[#6C6C6C]">
+                Te respondemos en menos de 24 horas
+              </p>
 
-<select
-  name="presupuesto"
-  value={formulario.presupuesto}
-  onChange={handleChange}
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
->
-  <option value="">Presupuesto aproximado</option>
-  <option value="Menos de 1.000 €">Menos de 1.000 €</option>
-  <option value="1.000 € - 3.000 €">1.000 € - 3.000 €</option>
-  <option value="3.000 € - 6.000 €">3.000 € - 6.000 €</option>
-  <option value="Más de 6.000 €">Más de 6.000 €</option>
-</select>
+            </div>
 
-<textarea
-  rows={6}
-  name="mensaje"
-  value={formulario.mensaje}
-  onChange={handleChange}
-  placeholder="Cuéntanos sobre tu proyecto..."
-  required
-  className="w-full border border-gray-300 rounded-xl px-5 py-4 resize-none focus:outline-none focus:ring-2 focus:ring-[#A36A33]"
-/><button
-  type="submit"
-  disabled={enviando}
-  className="w-full bg-[#A36A33] text-white py-4 rounded-xl text-lg font-semibold hover:bg-[#8B5A2B] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
->
-  {enviando ? "Enviando solicitud..." : "Solicitar mi presupuesto"}
-</button>
+          </div>
 
-{respuesta && (
-  <div
-    className={`rounded-xl p-4 text-center font-medium ${
-      respuesta.startsWith("✅")
-        ? "bg-green-100 text-green-700"
-        : "bg-red-100 text-red-700"
-    }`}
-  >
-    {respuesta}
-  </div>
-)}
 
-            </form>
+          {/* ASESORIA */}
+
+          <div className="flex items-center gap-3 border-b border-[#E8DED0] p-4 sm:border-b-0 sm:border-r">
+
+            <Ruler
+              size={25}
+              strokeWidth={1.6}
+              className="shrink-0 text-[#B97820]"
+            />
+
+            <div>
+
+              <p className="text-xs font-bold text-[#2C241C]">
+                Asesoría personalizada
+              </p>
+
+              <p className="text-[10px] leading-4 text-[#6C6C6C]">
+                Te guiamos en cada paso
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* EXPERIENCIA */}
+
+          <div className="flex items-center gap-3 border-r border-[#E8DED0] p-4">
+
+            <Award
+              size={25}
+              strokeWidth={1.6}
+              className="shrink-0 text-[#B97820]"
+            />
+
+            <div>
+
+              <p className="text-xs font-bold text-[#2C241C]">
+                Experiencia garantizada
+              </p>
+
+              <p className="text-[10px] leading-4 text-[#6C6C6C]">
+                Más de 10 años creando espacios
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* CALIDAD */}
+
+          <div className="flex items-center gap-3 p-4">
+
+            <ShieldCheck
+              size={25}
+              strokeWidth={1.6}
+              className="shrink-0 text-[#B97820]"
+            />
+
+            <div>
+
+              <p className="text-xs font-bold text-[#2C241C]">
+                Calidad asegurada
+              </p>
+
+              <p className="text-[10px] leading-4 text-[#6C6C6C]">
+                Materiales y acabados de primera
+              </p>
+
+            </div>
 
           </div>
 
