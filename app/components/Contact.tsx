@@ -20,31 +20,58 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="scroll-mt-24 bg-[#F7F1E8] px-3 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14"
+      className="
+        scroll-mt-24
+        bg-[#F7F1E8]
+        px-4
+        py-10
+        sm:px-6
+        lg:px-8
+        lg:py-14
+      "
     >
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto max-w-[1320px]">
 
-        {/* =========================
+        {/* =====================================================
             ENCABEZADO
-        ========================= */}
+        ===================================================== */}
 
-        <div className="mb-8 text-center lg:mb-9">
+        <div className="mb-8 text-center lg:mb-10">
 
           <div className="mb-3 flex items-center justify-center gap-4">
             <span className="h-[2px] w-9 bg-[#B97820]" />
 
-            <span className="text-[16px] font-semibold uppercase tracking-[0.3em] text-[#B97820]">
+            <span className="text-[15px] font-semibold uppercase tracking-[0.3em] text-[#B97820] sm:text-[16px]">
               CONTACTO
             </span>
 
             <span className="h-[2px] w-9 bg-[#B97820]" />
           </div>
 
-          <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-[#2C241C] sm:text-4xl lg:text-[44px]">
-            Hagamos realidad tu proyecto
+          <h2
+            className="
+              text-3xl
+              font-extrabold
+              tracking-[-0.04em]
+              text-[#2C241C]
+              sm:text-4xl
+              lg:text-[44px]
+            "
+          >
+            Hacemos realidad tu proyecto
           </h2>
 
-          <p className="mx-auto mt-2 max-w-[650px] text-sm leading-6 text-[#52627A] sm:text-[15px]">
+          <p
+            className="
+              mx-auto
+              mt-2
+              max-w-[650px]
+              text-sm
+              leading-6
+              text-[#52627A]
+              sm:text-[15px]
+            "
+          >
             Cuéntanos qué necesitas y nuestro equipo te asesorará para crear
             un mueble completamente personalizado.
           </p>
@@ -52,9 +79,9 @@ export default function Contact() {
         </div>
 
 
-        {/* =========================
+        {/* =====================================================
             CONTENIDO PRINCIPAL
-        ========================= */}
+        ===================================================== */}
 
         <div
           className="
@@ -64,58 +91,78 @@ export default function Contact() {
             border-[#E8DED0]
             bg-[#FCFAF7]
             shadow-[0_12px_40px_rgba(60,40,20,0.09)]
+
             lg:grid
-            lg:grid-cols-[0.78fr_1.42fr]
+            lg:grid-cols-[0.82fr_1.38fr]
           "
         >
 
-          {/* =========================
+          {/* =====================================================
               COLUMNA IZQUIERDA
-          ========================= */}
+          ===================================================== */}
 
-          <div className="relative min-h-[650px] overflow-hidden sm:min-h-[620px] lg:min-h-[560px]">
+          <div
+            className="
+              relative
+              min-h-[560px]
+              overflow-hidden
 
-            {/* IMAGEN */}
+              lg:min-h-[620px]
+            "
+          >
+
+            {/* =================================================
+                IMAGEN
+            ================================================= */}
 
             <Image
               src="/images/contacto.png"
               alt="Diseño y fabricación de muebles a medida"
               fill
               priority
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover object-center"
+              sizes="(max-width: 1023px) 100vw, 42vw"
+              className="
+                object-cover
+                object-center
+              "
             />
 
-            {/* CAPA OSCURA */}
-
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/80 lg:bg-gradient-to-t lg:from-black/85 lg:via-black/35 lg:to-black/5" />
-
-
-            {/* CONTENIDO */}
+            {/* =================================================
+                CAPA OSCURA
+            ================================================= */}
 
             <div
               className="
-                relative
+                absolute
+                inset-0
+                bg-gradient-to-t
+                from-black/85
+                via-black/45
+                to-black/15
+              "
+            />
+
+            {/* =================================================
+                CONTENIDO DE CONTACTO
+            ================================================= */}
+
+            <div
+              className="
+                absolute
+                inset-x-0
+                bottom-0
                 z-10
-                flex
-                min-h-[650px]
-                flex-col
-                justify-end
                 p-6
-                pb-6
-                sm:min-h-[620px]
+
                 sm:p-8
-                lg:absolute
-                lg:inset-x-0
-                lg:bottom-0
-                lg:min-h-0
-                lg:justify-start
+                lg:p-9
+                xl:p-10
               "
             >
 
               {/* TITULO */}
 
-              <div className="mb-5 flex items-center gap-3">
+              <div className="mb-4 flex items-center gap-3">
 
                 <div
                   className="
@@ -130,10 +177,21 @@ export default function Contact() {
                     text-white
                   "
                 >
-                  <User size={20} strokeWidth={1.8} />
+                  <User
+                    size={20}
+                    strokeWidth={1.8}
+                  />
                 </div>
 
-                <h3 className="text-[24px] font-bold leading-tight text-white sm:text-[25px]">
+                <h3
+                  className="
+                    text-[22px]
+                    font-bold
+                    leading-tight
+                    text-white
+                    sm:text-[24px]
+                  "
+                >
                   Estamos para ayudarte
                 </h3>
 
@@ -142,120 +200,209 @@ export default function Contact() {
 
               {/* DESCRIPCION */}
 
-              <p className="max-w-[460px] text-[15.5px] leading-7 text-white/95 sm:text-[16px] sm:leading-7">
+              <p
+                className="
+                  max-w-[470px]
+                  text-[14px]
+                  leading-6
+                  text-white/90
+
+                  sm:text-[16px]
+                "
+              >
                 Diseñamos cocinas, armarios, puertas, oficinas, muebles de
                 salón, estanterías, tiendas y todo tipo de muebles a medida.
                 Escríbenos y recibe asesoría sin compromiso.
               </p>
 
 
-              <div className="my-5 h-px bg-white/35" />
+              {/* LINEA */}
+
+              <div className="my-5 h-px bg-white/25" />
 
 
-              {/* TELEFONO */}
+              {/* =================================================
+                  TELEFONO
+              ================================================= */}
 
-              <div className="mb-4 flex items-center gap-3.5">
+              <div className="mb-3.5 flex items-center gap-3">
 
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-sm">
-                  <Phone size={16} strokeWidth={1.8} />
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-white/15
+                    text-white
+                  "
+                >
+                  <Phone
+                    size={16}
+                    strokeWidth={1.8}
+                  />
                 </div>
 
                 <div>
-                  <p className="text-[15px] font-bold leading-5 text-white">
+
+                  <p className="text-[14px] font-semibold text-white sm:text-[15px]">
                     Teléfono
                   </p>
 
-                  <p className="text-[14px] leading-5 text-white/90">
+                  <p className="text-[13px] text-white/80">
                     +34 646 61 33 59
                   </p>
+
                 </div>
 
               </div>
 
 
-              {/* CORREO */}
+              {/* =================================================
+                  CORREO
+              ================================================= */}
 
               <div className="mb-3.5 flex items-center gap-3">
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
-                  <Mail size={16} strokeWidth={1.8} />
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-white/15
+                    text-white
+                  "
+                >
+                  <Mail
+                    size={16}
+                    strokeWidth={1.8}
+                  />
                 </div>
 
                 <div>
-                  <p className="text-[15px] font-bold leading-5 text-white">
+
+                  <p className="text-[13px] font-semibold text-white">
                     Correo
                   </p>
 
-                  <p className="text-[14px] leading-5 text-white/90">
+                  <p className="text-[13px] text-white/80 sm:text-[14px]">
                     estanteriamsc@gmail.com
                   </p>
+
                 </div>
 
               </div>
 
 
-              {/* HORARIO */}
+              {/* =================================================
+                  HORARIO
+              ================================================= */}
 
               <div className="mb-3.5 flex items-center gap-3">
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
-                  <Clock size={16} strokeWidth={1.8} />
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-white/15
+                    text-white
+                  "
+                >
+                  <Clock
+                    size={16}
+                    strokeWidth={1.8}
+                  />
                 </div>
 
                 <div>
-                  <p className="text-[14px] leading-5 text-white/90">
+
+                  <p className="text-[13px] leading-5 text-white/90">
                     Horario
                   </p>
 
                   <p className="text-[13px] leading-5 text-white/80">
                     Lunes a sábado
                     <br />
-                    9:00 AM - 18:00
+                    9:00 AM - 18:00 PM
                   </p>
+
                 </div>
 
               </div>
 
 
-              {/* UBICACION */}
+              {/* =================================================
+                  UBICACION
+              ================================================= */}
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
-                  <MapPin size={16} strokeWidth={1.8} />
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-white/15
+                    text-white
+                  "
+                >
+                  <MapPin
+                    size={16}
+                    strokeWidth={1.8}
+                  />
                 </div>
 
                 <div>
+
                   <p className="text-[13px] font-semibold text-white">
                     Ubicación
                   </p>
 
-                  <p className="text-[14px] leading-5 text-white/90">
+                  <p className="text-[11px] text-white/75">
                     Sevilla, España
                   </p>
+
                 </div>
 
               </div>
 
 
-              {/* WHATSAPP */}
+              {/* =================================================
+                  WHATSAPP
+              ================================================= */}
 
               <a
                 href="https://wa.me/34646613359"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
-                  mt-6
+                  mt-5
                   flex
-                  h-14
+                  h-12
                   w-full
                   items-center
                   justify-center
                   gap-2
                   rounded-xl
                   bg-[#25D366]
-                  text-[15px]
-                  font-bold
+                  text-sm
+                  font-semibold
                   text-white
                   shadow-md
                   transition-all
@@ -265,7 +412,10 @@ export default function Contact() {
                   hover:shadow-lg
                 "
               >
-                <span className="text-lg">◔</span>
+                <span className="text-lg">
+                  ◔
+                </span>
+
                 Escribir por WhatsApp
               </a>
 
@@ -274,11 +424,21 @@ export default function Contact() {
           </div>
 
 
-          {/* =========================
+          {/* =====================================================
               FORMULARIO
-          ========================= */}
+          ===================================================== */}
 
-          <div className="bg-[#FCFAF7] p-6 sm:p-8 lg:p-9">
+          <div
+            className="
+              bg-[#FCFAF7]
+              p-6
+
+              sm:p-8
+
+              lg:p-9
+              xl:p-10
+            "
+          >
 
             {/* TITULO */}
 
@@ -297,15 +457,28 @@ export default function Contact() {
                   text-white
                 "
               >
-                <Pencil size={19} strokeWidth={1.8} />
+                <Pencil
+                  size={19}
+                  strokeWidth={1.8}
+                />
               </div>
 
-              <h3 className="text-[20px] font-bold leading-tight tracking-[-0.02em] text-[#171717] sm:text-[21px]">
+              <h3
+                className="
+                  text-[20px]
+                  font-bold
+                  tracking-[-0.02em]
+                  text-[#171717]
+                  sm:text-[22px]
+                "
+              >
                 Cuéntanos sobre tu proyecto
               </h3>
 
             </div>
 
+
+            {/* FORMULARIO */}
 
             <form className="space-y-3.5">
 
@@ -384,7 +557,7 @@ export default function Contact() {
               />
 
 
-              {/* PROYECTO */}
+              {/* TIPO DE PROYECTO */}
 
               <select
                 defaultValue=""
@@ -406,18 +579,44 @@ export default function Contact() {
                 "
               >
 
-                <option value="" disabled>
+                <option
+                  value=""
+                  disabled
+                >
                   Selecciona el tipo de proyecto *
                 </option>
 
-                <option>Cocina integral</option>
-                <option>Armario</option>
-                <option>Mueble de salón</option>
-                <option>Oficina</option>
-                <option>Tienda</option>
-                <option>Estantería</option>
-                <option>Mueble personalizado</option>
-                <option>Otro</option>
+                <option>
+                  Cocina integral
+                </option>
+
+                <option>
+                  Armario
+                </option>
+
+                <option>
+                  Mueble de salón
+                </option>
+
+                <option>
+                  Oficina
+                </option>
+
+                <option>
+                  Tienda
+                </option>
+
+                <option>
+                  Estantería
+                </option>
+
+                <option>
+                  Mueble personalizado
+                </option>
+
+                <option>
+                  Otro
+                </option>
 
               </select>
 
@@ -502,15 +701,32 @@ export default function Contact() {
                 "
               >
 
-                <option value="" disabled>
+                <option
+                  value=""
+                  disabled
+                >
                   Presupuesto aproximado
                 </option>
 
-                <option>Menos de 500 €</option>
-                <option>500 € - 1.000 €</option>
-                <option>1.000 € - 2.500 €</option>
-                <option>2.500 € - 5.000 €</option>
-                <option>Más de 5.000 €</option>
+                <option>
+                  Menos de 500 €
+                </option>
+
+                <option>
+                  500 € - 1.000 €
+                </option>
+
+                <option>
+                  1.000 € - 2.500 €
+                </option>
+
+                <option>
+                  2.500 € - 5.000 €
+                </option>
+
+                <option>
+                  Más de 5.000 €
+                </option>
 
               </select>
 
@@ -565,7 +781,10 @@ export default function Contact() {
                 "
               >
 
-                <Send size={17} strokeWidth={1.8} />
+                <Send
+                  size={17}
+                  strokeWidth={1.8}
+                />
 
                 Enviar solicitud
 
@@ -574,7 +793,17 @@ export default function Contact() {
 
               {/* SEGURIDAD */}
 
-              <div className="flex items-center justify-center gap-2 pt-1 text-[10px] text-[#888]">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  pt-1
+                  text-[10px]
+                  text-[#888]
+                "
+              >
 
                 <Lock size={12} />
 
@@ -591,9 +820,9 @@ export default function Contact() {
         </div>
 
 
-        {/* =========================
+        {/* =====================================================
             VENTAJAS
-        ========================= */}
+        ===================================================== */}
 
         <div
           className="
@@ -606,13 +835,26 @@ export default function Contact() {
             border-[#E8DED0]
             bg-[#FCFAF7]
             shadow-[0_8px_25px_rgba(60,40,20,0.06)]
+
             sm:grid-cols-4
           "
         >
 
           {/* RESPUESTA */}
 
-          <div className="flex items-center gap-3 border-b border-[#E8DED0] p-4 sm:border-b-0 sm:border-r">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              border-b
+              border-[#E8DED0]
+              p-4
+
+              sm:border-b-0
+              sm:border-r
+            "
+          >
 
             <Headphones
               size={25}
@@ -637,7 +879,19 @@ export default function Contact() {
 
           {/* ASESORIA */}
 
-          <div className="flex items-center gap-3 border-b border-[#E8DED0] p-4 sm:border-b-0 sm:border-r">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              border-b
+              border-[#E8DED0]
+              p-4
+
+              sm:border-b-0
+              sm:border-r
+            "
+          >
 
             <Ruler
               size={25}
@@ -662,7 +916,16 @@ export default function Contact() {
 
           {/* EXPERIENCIA */}
 
-          <div className="flex items-center gap-3 border-r border-[#E8DED0] p-4">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              border-r
+              border-[#E8DED0]
+              p-4
+            "
+          >
 
             <Award
               size={25}
@@ -687,7 +950,14 @@ export default function Contact() {
 
           {/* CALIDAD */}
 
-          <div className="flex items-center gap-3 p-4">
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              p-4
+            "
+          >
 
             <ShieldCheck
               size={25}
