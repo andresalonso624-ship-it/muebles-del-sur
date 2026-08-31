@@ -1,18 +1,20 @@
-const domain = process.env.SHOPIFY_STORE_DOMAIN;
-const token = process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN;
+const domain = process.env.DOMINIO_DE_TIENDA_DE_SHOPIFY;
+const token = process.env.FICHA_PÚBLICA_DE_SHOPIFY_STOREFRONT;
 
 if (!domain) {
-  throw new Error("Falta SHOPIFY_STORE_DOMAIN en .env.local");
+  throw new Error(
+    "Falta DOMINIO_DE_TIENDA_DE_SHOPIFY en las variables de entorno."
+  );
 }
 
 if (!token) {
   throw new Error(
-    "Falta SHOPIFY_STOREFRONT_PUBLIC_TOKEN en .env.local"
+    "Falta FICHA_PÚBLICA_DE_SHOPIFY_STOREFRONT en las variables de entorno."
   );
 }
 
-const shopifyDomain: string = domain;
-const shopifyToken: string = token;
+const shopifyDomain = domain;
+const shopifyToken = token;
 
 const endpoint = `https://${shopifyDomain}/api/2026-07/graphql.json`;
 
