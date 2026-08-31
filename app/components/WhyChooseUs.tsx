@@ -15,7 +15,6 @@ export default function WhyChooseUs() {
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
         >
-          {/* Plano + lápiz */}
           <rect
             x="10"
             y="9"
@@ -35,6 +34,7 @@ export default function WhyChooseUs() {
             stroke="currentColor"
             strokeWidth="2"
           />
+
           <path
             d="M47 37L51 41"
             stroke="currentColor"
@@ -55,7 +55,6 @@ export default function WhyChooseUs() {
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
         >
-          {/* Tableros de madera */}
           <rect
             x="9"
             y="15"
@@ -86,7 +85,6 @@ export default function WhyChooseUs() {
             strokeWidth="2"
           />
 
-          {/* Vetado */}
           <path
             d="M15 19C20 17 23 22 28 19C33 16 38 22 43 19C47 17 50 19 53 20"
             stroke="currentColor"
@@ -113,7 +111,6 @@ export default function WhyChooseUs() {
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
         >
-          {/* Máquina */}
           <rect
             x="9"
             y="34"
@@ -193,7 +190,6 @@ export default function WhyChooseUs() {
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
         >
-          {/* Casa */}
           <path
             d="M10 29L32 11L54 29"
             stroke="currentColor"
@@ -221,7 +217,6 @@ export default function WhyChooseUs() {
             strokeWidth="2"
           />
 
-          {/* Herramienta */}
           <path
             d="M42 16L50 24"
             stroke="currentColor"
@@ -241,52 +236,177 @@ export default function WhyChooseUs() {
   return (
     <section
       id="why-choose-us"
-      className="relative overflow-hidden bg-[#F7F1E8] py-8 sm:py-10 lg:py-5"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F7F1E8]
+        py-10
+        sm:py-12
+        lg:py-16
+      "
     >
-      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
+      <div
+        className="
+          mx-auto
+          max-w-[1400px]
+          px-5
+          sm:px-8
+          lg:px-10
+        "
+      >
 
-        {/* PARTE SUPERIOR */}
+        {/* =====================================================
+            BLOQUE PRINCIPAL
+            MÓVIL: SOLO TEXTO
+            DESKTOP: IMAGEN IZQUIERDA + TEXTO DERECHA
+        ===================================================== */}
 
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div
+          className="
+            grid
+            grid-cols-1
+            items-center
+            lg:grid-cols-2
+            lg:gap-16
+          "
+        >
 
-          {/* IMAGEN - IZQUIERDA */}
+          {/* =====================================================
+              IMAGEN
+              OCULTA COMPLETAMENTE EN MÓVIL
+          ===================================================== */}
 
-          <div className="relative order-2 h-[340px] w-full sm:h-[420px] lg:order-1 lg:h-[500px]">
+          <div
+            className="
+              relative
+              hidden
+              h-[500px]
+              w-full
+              lg:order-1
+              lg:block
+            "
+          >
             <Image
               src="/images/porque-elegirnos.png"
               alt="Diseño y fabricación de muebles a medida"
               fill
               priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain object-center lg:object-left"
+              sizes="50vw"
+              className="
+                object-contain
+                object-left
+              "
             />
           </div>
 
-          {/* TEXTO - DERECHA */}
 
-          <div className="relative order-1 z-10 lg:order-2">
+          {/* =====================================================
+              TEXTO
+          ===================================================== */}
 
-            <div className="mb-6 flex items-center gap-4">
-              <span className="h-[2px] w-10 bg-[#B97820]" />
+          <div
+            className="
+              relative
+              z-10
+              w-full
+              lg:order-2
+            "
+          >
 
-              <span className="text-[14px] font-semibold uppercase tracking-[0.28em] text-[#B97820] sm:text-[15px]">
+            {/* ETIQUETA */}
+
+            <div
+              className="
+                mb-5
+                flex
+                items-center
+                gap-3
+                sm:mb-6
+                sm:gap-4
+              "
+            >
+              <span
+                className="
+                  h-[2px]
+                  w-9
+                  shrink-0
+                  bg-[#B97820]
+                  sm:w-10
+                "
+              />
+
+              <span
+                className="
+                  text-[15px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.24em]
+                  text-[#B97820]
+                  sm:text-[16px]
+                  sm:tracking-[0.28em]
+                "
+              >
                 ¿POR QUÉ ELEGIRNOS?
               </span>
             </div>
 
-            <h2 className="max-w-[650px] text-5xl font-extrabold leading-[0.94] tracking-[-0.045em] text-[#171717] sm:text-6xl lg:text-[68px]">
+
+            {/* TITULO */}
+
+            <h2
+              className="
+                max-w-[700px]
+                text-[42px]
+                font-extrabold
+                leading-[0.94]
+                tracking-[-0.045em]
+                text-[#171717]
+
+                sm:text-[52px]
+
+                lg:text-[68px]
+              "
+            >
               Muchos más
               <br />
               que muebles
               <br />
+
               <span className="text-[#B97820]">
                 para tu negocio.
               </span>
             </h2>
 
-            <div className="mt-8 h-[3px] w-14 bg-[#B97820]" />
 
-            <p className="mt-6 max-w-[600px] text-base leading-7 text-[#315B8C] sm:text-lg sm:leading-8">
+            {/* LINEA */}
+
+            <div
+              className="
+                mt-7
+                h-[3px]
+                w-12
+                bg-[#B97820]
+                sm:mt-8
+                sm:w-14
+              "
+            />
+
+
+            {/* DESCRIPCION */}
+
+            <p
+              className="
+                mt-5
+                max-w-[600px]
+                text-[16px]
+                leading-7
+                text-[#315B8C]
+
+                sm:mt-6
+                sm:text-[18px]
+                sm:leading-8
+              "
+            >
               En Estanterías MSC combinamos diseño, tecnología y
               fabricación profesional para crear espacios únicos,
               funcionales y duraderos.
@@ -296,76 +416,161 @@ export default function WhyChooseUs() {
 
         </div>
 
-        {/* TARJETAS */}
 
-        <div className="relative z-20 mt-8 grid grid-cols-2 gap-4 lg:mt-[-15px] lg:grid-cols-4 lg:gap-5">
+        {/* =====================================================
+            TARJETAS
+        ===================================================== */}
+
+        <div
+          className="
+            relative
+            z-20
+
+            mt-8
+
+            grid
+            grid-cols-2
+            gap-3
+
+            sm:mt-10
+            sm:gap-4
+
+            lg:mt-12
+            lg:grid-cols-4
+            lg:gap-5
+          "
+        >
 
           {reasons.map((reason) => (
             <div
               key={reason.title}
               className="
-                min-h-[270px]
+                group
+                min-h-[245px]
+
                 rounded-[18px]
+
                 border
                 border-[#E8DED0]
+
                 bg-[#FCFAF7]
-                px-5
-                py-6
+
+                px-4
+                py-5
+
                 shadow-[0_8px_25px_rgba(60,40,20,0.07)]
+
                 transition-all
                 duration-300
+
                 hover:-translate-y-1
                 hover:shadow-[0_14px_30px_rgba(60,40,20,0.12)]
+
+                sm:min-h-[270px]
                 sm:px-6
                 sm:py-7
               "
             >
 
-              {/* ICONO */}
+              {/* =================================================
+                  ICONO
+              ================================================= */}
 
               <div
                 className="
-                  mb-6
+                  mb-5
                   flex
-                  h-[72px]
-                  w-[72px]
+                  h-[62px]
+                  w-[62px]
                   items-center
                   justify-center
+
                   rounded-full
+
                   border
                   border-[#E8DCCA]
+
                   text-[#C78324]
+
+                  transition-transform
+                  duration-300
+
+                  group-hover:scale-105
+
+                  sm:mb-6
+                  sm:h-[72px]
+                  sm:w-[72px]
                 "
               >
                 <div
                   className="
                     flex
-                    h-[58px]
-                    w-[58px]
+                    h-[50px]
+                    w-[50px]
                     items-center
                     justify-center
+
                     rounded-full
+
                     border
                     border-[#E8DCCA]
+
+                    sm:h-[58px]
+                    sm:w-[58px]
                   "
                 >
                   {reason.icon}
                 </div>
               </div>
 
-              {/* TITULO */}
 
-              <h3 className="text-[17px] font-extrabold tracking-[-0.02em] text-[#171717] sm:text-[19px]">
+              {/* =================================================
+                  TITULO
+              ================================================= */}
+
+              <h3
+                className="
+                  text-[16px]
+                  font-extrabold
+                  leading-tight
+                  tracking-[-0.02em]
+                  text-[#171717]
+
+                  sm:text-[19px]
+                "
+              >
                 {reason.title}
               </h3>
 
+
               {/* LINEA */}
 
-              <div className="mt-3 h-[2px] w-8 bg-[#C78324]" />
+              <div
+                className="
+                  mt-3
+                  h-[2px]
+                  w-7
+                  bg-[#C78324]
+
+                  sm:w-8
+                "
+              />
+
 
               {/* DESCRIPCION */}
 
-              <p className="mt-4 text-[12px] leading-5 text-[#315B8C] sm:text-[13px] sm:leading-6">
+              <p
+                className="
+                  mt-3
+                  text-[12px]
+                  leading-5
+                  text-[#315B8C]
+
+                  sm:mt-4
+                  sm:text-[13px]
+                  sm:leading-6
+                "
+              >
                 {reason.description}
               </p>
 

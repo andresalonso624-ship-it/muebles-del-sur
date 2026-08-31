@@ -13,17 +13,71 @@ export default function Services() {
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12"
+          className="h-9 w-9 sm:h-10 sm:w-10"
         >
-          <rect x="8" y="27" width="48" height="25" rx="2" stroke="currentColor" strokeWidth="2" />
-          <path d="M8 35H56" stroke="currentColor" strokeWidth="2" />
-          <path d="M20 27V52" stroke="currentColor" strokeWidth="2" />
-          <path d="M44 27V52" stroke="currentColor" strokeWidth="2" />
-          <rect x="12" y="12" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="2" />
-          <path d="M19 12V24" stroke="currentColor" strokeWidth="2" />
-          <path d="M36 12V24" stroke="currentColor" strokeWidth="2" />
-          <path d="M32 18H40" stroke="currentColor" strokeWidth="2" />
-          <circle cx="36" cy="18" r="1" fill="currentColor" />
+          {/* Mueble inferior */}
+          <rect
+            x="7"
+            y="29"
+            width="50"
+            height="25"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Encimera */}
+          <path
+            d="M6 29H58"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Divisiones */}
+          <path
+            d="M23 29V54"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M41 29V54"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Mueble superior */}
+          <rect
+            x="13"
+            y="10"
+            width="38"
+            height="15"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* División superior */}
+          <path
+            d="M32 10V25"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Tiradores */}
+          <circle
+            cx="27"
+            cy="18"
+            r="1.5"
+            fill="currentColor"
+          />
+
+          <circle
+            cx="37"
+            cy="18"
+            r="1.5"
+            fill="currentColor"
+          />
         </svg>
       ),
     },
@@ -37,16 +91,59 @@ export default function Services() {
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12"
+          className="h-9 w-9 sm:h-10 sm:w-10"
         >
-          <rect x="14" y="7" width="36" height="50" rx="2" stroke="currentColor" strokeWidth="2" />
-          <path d="M32 7V43" stroke="currentColor" strokeWidth="2" />
-          <path d="M14 43H50" stroke="currentColor" strokeWidth="2" />
-          <path d="M14 50H50" stroke="currentColor" strokeWidth="2" />
-          <path d="M29 24H31" stroke="currentColor" strokeWidth="2" />
-          <path d="M33 24H35" stroke="currentColor" strokeWidth="2" />
-          <path d="M25 46V50" stroke="currentColor" strokeWidth="2" />
-          <path d="M39 46V50" stroke="currentColor" strokeWidth="2" />
+          {/* Armario */}
+          <rect
+            x="12"
+            y="7"
+            width="40"
+            height="50"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Puertas */}
+          <path
+            d="M32 7V57"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Tiradores */}
+          <circle
+            cx="29"
+            cy="32"
+            r="1.5"
+            fill="currentColor"
+          />
+
+          <circle
+            cx="35"
+            cy="32"
+            r="1.5"
+            fill="currentColor"
+          />
+
+          {/* Cajones */}
+          <path
+            d="M13 45H51"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M23 45V56"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M41 45V56"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
         </svg>
       ),
     },
@@ -60,14 +157,65 @@ export default function Services() {
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12"
+          className="h-9 w-9 sm:h-10 sm:w-10"
         >
-          <rect x="10" y="10" width="44" height="27" rx="2" stroke="currentColor" strokeWidth="2" />
-          <path d="M32 37V45" stroke="currentColor" strokeWidth="2" />
-          <path d="M23 45H41" stroke="currentColor" strokeWidth="2" />
-          <rect x="7" y="45" width="50" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-          <path d="M18 45V55" stroke="currentColor" strokeWidth="2" />
-          <path d="M46 45V55" stroke="currentColor" strokeWidth="2" />
+          {/* Televisor */}
+          <rect
+            x="9"
+            y="8"
+            width="46"
+            height="29"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Pantalla */}
+          <rect
+            x="14"
+            y="13"
+            width="36"
+            height="19"
+            rx="1"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+
+          {/* Pie */}
+          <path
+            d="M26 43H38"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M32 37V43"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Mueble inferior */}
+          <rect
+            x="7"
+            y="45"
+            width="50"
+            height="11"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M23 45V56"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M41 45V56"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
         </svg>
       ),
     },
@@ -81,31 +229,66 @@ export default function Services() {
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12"
+          className="h-9 w-9 sm:h-10 sm:w-10"
         >
+          {/* Fachada */}
           <path
-            d="M8 26L13 14H51L56 26"
+            d="M7 25L13 10H51L57 25"
             stroke="currentColor"
             strokeWidth="2"
           />
+
+          {/* Toldos */}
           <path
-            d="M8 26C8 31 12 34 16 34C20 34 24 31 24 26"
+            d="M7 25C7 30 11 33 15 33C19 33 23 30 23 25"
             stroke="currentColor"
             strokeWidth="2"
           />
+
           <path
-            d="M24 26C24 31 28 34 32 34C36 34 40 31 40 26"
+            d="M23 25C23 30 27 33 32 33C37 33 41 30 41 25"
             stroke="currentColor"
             strokeWidth="2"
           />
+
           <path
-            d="M40 26C40 31 44 34 48 34C52 34 56 31 56 26"
+            d="M41 25C41 30 45 33 49 33C53 33 57 30 57 25"
             stroke="currentColor"
             strokeWidth="2"
           />
-          <path d="M13 34V56H51V34" stroke="currentColor" strokeWidth="2" />
-          <rect x="20" y="41" width="9" height="15" stroke="currentColor" strokeWidth="2" />
-          <rect x="34" y="40" width="11" height="9" stroke="currentColor" strokeWidth="2" />
+
+          {/* Edificio */}
+          <path
+            d="M13 33V56H51V33"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Puerta */}
+          <rect
+            x="20"
+            y="40"
+            width="10"
+            height="16"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          {/* Ventana */}
+          <rect
+            x="35"
+            y="40"
+            width="10"
+            height="9"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+
+          <path
+            d="M40 40V49"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
         </svg>
       ),
     },
@@ -114,47 +297,145 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-[#F7F1E8] py-16 sm:py-20 lg:py-15"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F7F1E8]
+        py-12
+        sm:py-16
+        lg:py-20
+      "
     >
-      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
+      <div
+        className="
+          mx-auto
+          max-w-[1400px]
+          px-5
+          sm:px-8
+          lg:px-10
+        "
+      >
 
-        {/* CONTENIDO SUPERIOR */}
+        {/* =====================================================
+            CABECERA
+        ====================================================== */}
 
-        <div className="relative min-h-[360px] lg:min-h-[400px]">
+        <div
+          className="
+            relative
+            min-h-0
+            lg:min-h-[400px]
+          "
+        >
 
           {/* TEXTO */}
 
-          <div className="relative z-20 max-w-[650px] pt-2 lg:pt-4">
+          <div
+            className="
+              relative
+              z-20
+              max-w-[650px]
+              pt-2
+              sm:pt-4
+              lg:pt-4
+            "
+          >
 
-            <div className="mb-6 flex items-center gap-4">
-              <span className="h-[2px] w-10 bg-[#B97820]" />
+            {/* ETIQUETA */}
 
-              <span className="text-[15px] font-semibold uppercase tracking-[0.22em] text-[#B97820]">
+            <div
+              className="
+                mb-6
+                flex
+                items-center
+                gap-4
+                sm:mb-7
+              "
+            >
+              <span
+                className="
+                  h-[2px]
+                  w-9
+                  bg-[#B97820]
+                  sm:w-10
+                "
+              />
+
+              <span
+                className="
+                  text-[12px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.20em]
+                  text-[#B97820]
+                  sm:text-[14px]
+                  sm:tracking-[0.22em]
+                "
+              >
                 Nuestros servicios
               </span>
             </div>
 
-            <h2 className="max-w-[650px] text-4xl font-extrabold leading-[0.98] tracking-[-0.04em] text-[#171717] sm:text-5xl lg:text-[58px]">
+            {/* TITULO */}
+
+            <h2
+              className="
+                max-w-[650px]
+                text-[40px]
+                font-extrabold
+                leading-[0.96]
+                tracking-[-0.045em]
+                text-[#171717]
+                sm:text-5xl
+                lg:text-[58px]
+              "
+            >
               Diseñamos soluciones
               <br />
               a medida para
               <br />
+
               <span className="text-[#C78324]">
                 cada espacio.
               </span>
             </h2>
 
-            <div className="mt-7 h-[2px] w-10 bg-[#B97820]" />
+            {/* LINEA */}
 
-            <p className="mt-5 max-w-[560px] text-base leading-7 text-[#272727] sm:text-lg">
-              Combinamos funcionalidad, diseño y fabricación propia para crear
-              espacios únicos, pensados para ti.
+            <div
+              className="
+                mt-6
+                h-[2px]
+                w-9
+                bg-[#B97820]
+                sm:mt-7
+                sm:w-10
+              "
+            />
+
+            {/* DESCRIPCION */}
+
+            <p
+              className="
+                mt-5
+                max-w-[560px]
+                text-[16px]
+                leading-7
+                text-[#272727]
+                sm:text-lg
+                sm:leading-8
+              "
+            >
+              Combinamos funcionalidad, diseño y fabricación
+              propia para crear espacios únicos, pensados para ti.
             </p>
 
           </div>
 
 
-          {/* IMAGEN 3D */}
+          {/* =====================================================
+              IMAGEN - SOLO ESCRITORIO
+          ====================================================== */}
 
           <div
             className="
@@ -170,126 +451,194 @@ export default function Services() {
               xl:w-[680px]
             "
           >
-            {/* CUADRO DE FONDO */}
-
-            <div
-          
-            />
-
-            {/* IMAGEN */}
 
             <div className="relative h-[420px] w-full">
+
               <Image
                 src="/images/servicios-madera.png"
-                alt="Madera para fabricación de muebles a medida"
+                alt="Diseño y fabricación de muebles a medida"
                 fill
                 priority
                 sizes="(max-width: 1280px) 55vw, 680px"
-                className="object-contain object-right"
+                className="
+                  object-contain
+                  object-right
+                "
               />
+
             </div>
+
           </div>
 
         </div>
 
 
-        {/* TARJETAS */}
+        {/* =====================================================
+            TARJETAS DE SERVICIOS
+        ====================================================== */}
 
         <div
           className="
             relative
             z-30
-            -mt-2
+
+            mt-10
+
             grid
-            grid-cols-1
-            gap-4
+            grid-cols-2
+            gap-3
+
+            sm:mt-12
             sm:grid-cols-2
+            sm:gap-5
+
+            lg:-mt-2
             lg:grid-cols-4
             lg:gap-5
           "
         >
 
           {services.map((service) => (
+
             <div
               key={service.title}
               className="
                 group
-                min-h-[280px]
-                rounded-[18px]
+
+                min-h-[235px]
+
+                rounded-[16px]
+
                 border
                 border-[#E8DED0]
+
                 bg-[#FCFAF7]
-                px-6
-                py-7
-                shadow-[0_8px_25px_rgba(60,40,20,0.08)]
+
+                px-4
+                py-5
+
+                shadow-[0_6px_20px_rgba(60,40,20,0.06)]
+
                 transition-all
                 duration-300
-                hover:-translate-y-2
-                hover:shadow-[0_16px_35px_rgba(60,40,20,0.13)]
-                sm:px-7
+
+                sm:min-h-[270px]
+                sm:rounded-[18px]
+                sm:px-6
+                sm:py-7
+
+                lg:min-h-[280px]
               "
             >
 
-              {/* ICONO */}
+              {/* =================================================
+                  ICONO
+              ================================================== */}
 
               <div
                 className="
-                  mb-7
+                  mb-5
                   flex
-                  h-[76px]
-                  w-[76px]
+                  h-[58px]
+                  w-[58px]
                   items-center
                   justify-center
+
                   rounded-full
+
                   border
                   border-[#E8DCCA]
+
                   text-[#C78324]
+
                   transition-transform
                   duration-300
+
                   group-hover:scale-105
+
+                  sm:mb-7
+                  sm:h-[76px]
+                  sm:w-[76px]
                 "
               >
+
                 <div
                   className="
                     flex
-                    h-[62px]
-                    w-[62px]
+                    h-[46px]
+                    w-[46px]
                     items-center
                     justify-center
+
                     rounded-full
+
                     border
                     border-[#E8DCCA]
+
+                    sm:h-[62px]
+                    sm:w-[62px]
                   "
                 >
                   {service.icon}
                 </div>
+
               </div>
 
 
-              {/* TITULO */}
+              {/* =================================================
+                  TITULO
+              ================================================== */}
 
-              <h3 className="text-[19px] font-extrabold tracking-[-0.02em] text-[#171717]">
+              <h3
+                className="
+                  text-[16px]
+                  font-extrabold
+                  leading-[1.15]
+                  tracking-[-0.025em]
+                  text-[#171717]
+
+                  sm:text-[19px]
+                "
+              >
                 {service.title}
               </h3>
 
 
-              {/* LINEA */}
+              {/* =================================================
+                  LINEA
+              ================================================== */}
 
-              <div className="mt-3 h-[2px] w-7 bg-[#C78324]" />
+              <div
+                className="
+                  mt-3
+                  h-[2px]
+                  w-7
+                  bg-[#C78324]
+                "
+              />
 
 
-              {/* DESCRIPCION */}
+              {/* =================================================
+                  DESCRIPCION
+              ================================================== */}
 
-              <p className="mt-4 text-[13px] leading-6 text-[#454545]">
+              <p
+                className="
+                  mt-3
+                  text-[12px]
+                  leading-[1.55]
+                  text-[#454545]
+
+                  sm:mt-4
+                  sm:text-[13px]
+                  sm:leading-6
+                "
+              >
                 {service.description}
               </p>
 
-
-              {/* FLECHA */}
-
- 
-
             </div>
+
           ))}
 
         </div>

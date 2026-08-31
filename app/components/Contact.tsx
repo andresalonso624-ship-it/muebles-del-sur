@@ -20,7 +20,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="scroll-mt-24 bg-[#F7F1E8] px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
+      className="scroll-mt-24 bg-[#F7F1E8] px-3 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14"
     >
       <div className="mx-auto max-w-[1180px]">
 
@@ -73,7 +73,7 @@ export default function Contact() {
               COLUMNA IZQUIERDA
           ========================= */}
 
-          <div className="relative min-h-[560px] overflow-hidden">
+          <div className="relative min-h-[650px] overflow-hidden sm:min-h-[620px] lg:min-h-[560px]">
 
             {/* IMAGEN */}
 
@@ -88,25 +88,34 @@ export default function Contact() {
 
             {/* CAPA OSCURA */}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/80 lg:bg-gradient-to-t lg:from-black/85 lg:via-black/35 lg:to-black/5" />
 
 
             {/* CONTENIDO */}
 
             <div
               className="
-                absolute
-                inset-x-0
-                bottom-0
+                relative
                 z-10
-                p-7
+                flex
+                min-h-[650px]
+                flex-col
+                justify-end
+                p-6
+                pb-6
+                sm:min-h-[620px]
                 sm:p-8
+                lg:absolute
+                lg:inset-x-0
+                lg:bottom-0
+                lg:min-h-0
+                lg:justify-start
               "
             >
 
               {/* TITULO */}
 
-              <div className="mb-4 flex items-center gap-3">
+              <div className="mb-5 flex items-center gap-3">
 
                 <div
                   className="
@@ -124,7 +133,7 @@ export default function Contact() {
                   <User size={20} strokeWidth={1.8} />
                 </div>
 
-                <h3 className="text-[23px] font-bold text-white sm:text-[24px]">
+                <h3 className="text-[24px] font-bold leading-tight text-white sm:text-[25px]">
                   Estamos para ayudarte
                 </h3>
 
@@ -133,30 +142,30 @@ export default function Contact() {
 
               {/* DESCRIPCION */}
 
-              <p className="max-w-[430px] text-[15px] leading-6 text-white/90 sm:text-[16px]">
+              <p className="max-w-[460px] text-[15.5px] leading-7 text-white/95 sm:text-[16px] sm:leading-7">
                 Diseñamos cocinas, armarios, puertas, oficinas, muebles de
                 salón, estanterías, tiendas y todo tipo de muebles a medida.
                 Escríbenos y recibe asesoría sin compromiso.
               </p>
 
 
-              <div className="my-5 h-px bg-white/25" />
+              <div className="my-5 h-px bg-white/35" />
 
 
               {/* TELEFONO */}
 
-              <div className="mb-3.5 flex items-center gap-3">
+              <div className="mb-4 flex items-center gap-3.5">
 
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white backdrop-blur-sm">
                   <Phone size={16} strokeWidth={1.8} />
                 </div>
 
                 <div>
-                  <p className="text-[15px] font-semibold text-white">
+                  <p className="text-[15px] font-bold leading-5 text-white">
                     Teléfono
                   </p>
 
-                  <p className="text-[13px] text-white/80">
+                  <p className="text-[14px] leading-5 text-white/90">
                     +34 646 61 33 59
                   </p>
                 </div>
@@ -173,11 +182,11 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <p className="text-[13px] font-semibold text-white">
+                  <p className="text-[15px] font-bold leading-5 text-white">
                     Correo
                   </p>
 
-                  <p className="text-[14px] text-white/80">
+                  <p className="text-[14px] leading-5 text-white/90">
                     estanteriamsc@gmail.com
                   </p>
                 </div>
@@ -194,14 +203,14 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <p className="text-[13px] leading-5 text-white/80">
+                  <p className="text-[14px] leading-5 text-white/90">
                     Horario
                   </p>
 
                   <p className="text-[13px] leading-5 text-white/80">
                     Lunes a sábado
                     <br />
-                    9:00 AM - 18:00 PM
+                    9:00 AM - 18:00
                   </p>
                 </div>
 
@@ -221,7 +230,7 @@ export default function Contact() {
                     Ubicación
                   </p>
 
-                  <p className="text-[11px] text-white/75">
+                  <p className="text-[14px] leading-5 text-white/90">
                     Sevilla, España
                   </p>
                 </div>
@@ -236,17 +245,17 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
-                  mt-5
+                  mt-6
                   flex
-                  h-12
+                  h-14
                   w-full
                   items-center
                   justify-center
                   gap-2
                   rounded-xl
                   bg-[#25D366]
-                  text-sm
-                  font-semibold
+                  text-[15px]
+                  font-bold
                   text-white
                   shadow-md
                   transition-all
@@ -291,7 +300,7 @@ export default function Contact() {
                 <Pencil size={19} strokeWidth={1.8} />
               </div>
 
-              <h3 className="text-[20px] font-bold tracking-[-0.02em] text-[#171717]">
+              <h3 className="text-[20px] font-bold leading-tight tracking-[-0.02em] text-[#171717] sm:text-[21px]">
                 Cuéntanos sobre tu proyecto
               </h3>
 

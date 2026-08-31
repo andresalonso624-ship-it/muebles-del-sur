@@ -28,7 +28,7 @@ export default function Hero() {
       className="
         relative
         h-[100svh]
-        min-h-[600px]
+        min-h-[680px]
         w-full
         overflow-hidden
         bg-black
@@ -82,7 +82,7 @@ export default function Hero() {
           CAPAS OSCURAS
       ===================================================== */}
 
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-black/25" />
 
       <div
         className="
@@ -91,7 +91,7 @@ export default function Hero() {
           bg-gradient-to-r
           from-black/75
           via-black/35
-          to-black/5
+          to-black/10
         "
       />
 
@@ -100,8 +100,8 @@ export default function Hero() {
           absolute
           inset-0
           bg-gradient-to-t
-          from-black/65
-          via-transparent
+          from-black/75
+          via-black/15
           to-black/10
         "
       />
@@ -125,6 +125,11 @@ export default function Hero() {
             xl:px-20
           "
         >
+
+          {/* =================================================
+              TEXTO
+          ================================================= */}
+
           <motion.div
             key={`texto-${currentImage}`}
             initial={{
@@ -142,20 +147,40 @@ export default function Hero() {
             className="
               w-full
               max-w-[760px]
-              translate-y-8
+
+              translate-y-0
+
+              sm:translate-y-4
+
               lg:translate-y-6
+
+              pt-[95px]
+              sm:pt-[110px]
+              lg:pt-0
             "
           >
+
             {/* =================================================
                 MARCA
             ================================================= */}
 
-            <div className="mb-5 flex items-center gap-4 sm:mb-6">
+            <div
+              className="
+                mb-5
+                flex
+                items-center
+                gap-3
+
+                sm:mb-6
+                sm:gap-4
+              "
+            >
               <span
                 className="
                   h-[2px]
-                  w-12
+                  w-9
                   bg-[#D6A13A]
+
                   sm:w-14
                 "
               />
@@ -165,12 +190,15 @@ export default function Hero() {
                   text-[10px]
                   font-bold
                   uppercase
-                  tracking-[0.3em]
+                  tracking-[0.25em]
                   text-white
+
                   sm:text-xs
+
                   lg:text-sm
                 "
               >
+                
               </p>
             </div>
 
@@ -180,12 +208,19 @@ export default function Hero() {
 
             <h1
               className="
-                max-w-[760px]
-                text-[clamp(3.8rem,6.2vw,6.7rem)]
+                max-w-[700px]
+
+                text-[52px]
                 font-extrabold
-                leading-[0.91]
+                leading-[0.92]
                 tracking-[-0.045em]
                 text-white
+
+                sm:text-[64px]
+
+                md:text-[72px]
+
+                lg:text-[clamp(4rem,6.2vw,6.7rem)]
               "
             >
               Espacios
@@ -205,13 +240,14 @@ export default function Hero() {
 
             <div
               className="
-                mt-70
-                h-1
-                w-20
+                mt-6
+                h-[3px]
+                w-14
                 rounded-full
                 bg-[#D6A13A]
-                sm:mt-8
-                sm:w-24
+
+                sm:mt-7
+                sm:w-20
               "
             />
 
@@ -221,15 +257,20 @@ export default function Hero() {
 
             <p
               className="
-                mt-6
-                max-w-[670px]
-                text-base
+                mt-5
+                max-w-[620px]
+
+                text-[18px]
                 font-medium
-                leading-7
-                text-white/90
-                sm:text-lg
-                sm:leading-8
+                leading-[1.5]
+                text-white/95
+
+                sm:mt-6
+                sm:text-[19px]
+                sm:leading-7
+
                 lg:text-xl
+                lg:leading-8
               "
             >
               Diseñamos, fabricamos e instalamos
@@ -241,37 +282,50 @@ export default function Hero() {
                 BOTÓN
             ================================================= */}
 
-            <div className="mt-8">
+            <div
+              className="
+                mt-6
+
+                sm:mt-8
+              "
+            >
               <Link
                 href="/proyectos"
                 className="
                   inline-flex
-                  h-[54px]
+                  h-[52px]
                   items-center
                   justify-center
                   rounded-xl
                   bg-[#A36A33]
-                  px-9
-                  text-base
+                  px-7
+                  text-[15px]
                   font-bold
                   text-white
                   shadow-xl
                   transition-all
                   duration-300
+
                   hover:-translate-y-1
                   hover:bg-[#8E5C2C]
                   hover:shadow-2xl
+
+                  sm:h-[54px]
+                  sm:px-9
+                  sm:text-base
                 "
               >
                 Ver proyectos
               </Link>
             </div>
+
           </motion.div>
         </div>
       </div>
 
       {/* =====================================================
           INFORMACIÓN DERECHA
+          SOLO PC
       ===================================================== */}
 
       <div
@@ -334,11 +388,14 @@ export default function Hero() {
             items-center
             justify-between
             px-6
+
             sm:px-10
+
             lg:px-16
             xl:px-20
           "
         >
+
           {/* PUNTOS */}
 
           <div className="flex items-center gap-2">
@@ -353,6 +410,7 @@ export default function Hero() {
                   rounded-full
                   transition-all
                   duration-500
+
                   ${
                     currentImage === index
                       ? "w-12 bg-[#D6A13A]"
@@ -384,37 +442,15 @@ export default function Hero() {
               {String(heroImages.length).padStart(2, "0")}
             </span>
           </div>
+
         </div>
       </div>
 
       {/* =====================================================
-          VERSIÓN MÓVIL
+          INFORMACIÓN MÓVIL
+          ELIMINADA PARA QUE NO SE MONTE CON EL TEXTO
       ===================================================== */}
 
-      <div
-        className="
-          absolute
-          bottom-20
-          right-6
-          z-20
-          lg:hidden
-        "
-      >
-        <p
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.25em]
-            text-white/60
-          "
-        >
-          Diseño
-        </p>
-
-        <p className="mt-1 text-xs font-semibold text-white">
-          Fabricación a medida
-        </p>
-      </div>
     </section>
   );
 }
