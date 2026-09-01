@@ -2,7 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import CatalogoCard from "../components/CatalogoCard";
-import { getShopifyProducts } from "../lib/shopify-products";
+
+import {
+  getShopifyProducts,
+  type ShopifyProduct,
+  type ShopifyCollection,
+} from "../lib/shopify-products";
 
 interface CatalogoPageProps {
   searchParams: Promise<{
@@ -23,7 +28,8 @@ export default async function CatalogoPage({
   // PRODUCTOS
   // =========================================================
 
-  const productosShopify = await getShopifyProducts();
+  const productosShopify: ShopifyProduct[] =
+    await getShopifyProducts();
 
   // =========================================================
   // CATEGORÍAS
@@ -31,26 +37,27 @@ export default async function CatalogoPage({
 
   const categoriasMap = new Map<
     string,
-    {
-      title: string;
-      handle: string;
-    }
+    ShopifyCollection
   >();
 
-  productosShopify.forEach((producto) => {
-    if (!Array.isArray(producto.collections)) {
-      return;
-    }
-
-    producto.collections.forEach((collection) => {
-      if (!categoriasMap.has(collection.handle)) {
-        categoriasMap.set(collection.handle, {
-          title: collection.title,
-          handle: collection.handle,
-        });
+  productosShopify.forEach(
+    (producto: ShopifyProduct) => {
+      if (!Array.isArray(producto.collections)) {
+        return;
       }
-    });
-  });
+
+      producto.collections.forEach(
+        (collection: ShopifyCollection) => {
+          if (!categoriasMap.has(collection.handle)) {
+            categoriasMap.set(
+              collection.handle,
+              collection
+            );
+          }
+        }
+      );
+    }
+  );
 
   const categorias = Array.from(
     categoriasMap.values()
@@ -67,23 +74,25 @@ export default async function CatalogoPage({
     .trim();
 
   let productosFiltrados =
-    productosShopify.filter((producto) => {
-      if (!textoBusqueda) {
-        return true;
-      }
+    productosShopify.filter(
+      (producto: ShopifyProduct) => {
+        if (!textoBusqueda) {
+          return true;
+        }
 
-      return (
-        producto.title
-          .toLowerCase()
-          .includes(textoBusqueda) ||
-        producto.handle
-          .toLowerCase()
-          .includes(textoBusqueda) ||
-        producto.description
-          .toLowerCase()
-          .includes(textoBusqueda)
-      );
-    });
+        return (
+          producto.title
+            .toLowerCase()
+            .includes(textoBusqueda) ||
+          producto.handle
+            .toLowerCase()
+            .includes(textoBusqueda) ||
+          producto.description
+            .toLowerCase()
+            .includes(textoBusqueda)
+        );
+      }
+    );
 
   // =========================================================
   // FILTRO CATEGORÍA
@@ -91,16 +100,18 @@ export default async function CatalogoPage({
 
   if (categoria) {
     productosFiltrados =
-      productosFiltrados.filter((producto) => {
-        if (!Array.isArray(producto.collections)) {
-          return false;
-        }
+      productosFiltrados.filter(
+        (producto: ShopifyProduct) => {
+          if (!Array.isArray(producto.collections)) {
+            return false;
+          }
 
-        return producto.collections.some(
-          (collection) =>
-            collection.handle === categoria
-        );
-      });
+          return producto.collections.some(
+            (collection: ShopifyCollection) =>
+              collection.handle === categoria
+          );
+        }
+      );
   }
 
   // =========================================================
@@ -109,8 +120,13 @@ export default async function CatalogoPage({
 
   const categoriaActual =
     categorias.find(
-      (item) => item.handle === categoria
+      (item: ShopifyCollection) =>
+        item.handle === categoria
     )?.title || "Todos los productos";
+
+  // =========================================================
+  // PÁGINA
+  // =========================================================
 
   return (
     <main className="min-h-screen bg-[#F7F2EC]">
@@ -130,21 +146,13 @@ export default async function CatalogoPage({
           className="object-cover"
         />
 
-        {/* OSCURECER IMAGEN */}
-
         <div className="absolute inset-0 bg-black/50" />
 
-        {/* DEGRADADO */}
-
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
-
-        {/* CONTENIDO */}
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 sm:px-6 lg:px-8">
 
           <div className="max-w-3xl text-white">
-
-            {/* VOLVER */}
 
             <Link
               href="/"
@@ -153,29 +161,20 @@ export default async function CatalogoPage({
               ← Volver al inicio
             </Link>
 
-            {/* TÍTULO */}
-
             <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Catálogo
             </h1>
 
-            {/* LÍNEA */}
-
             <div className="mt-3 h-1 w-14 rounded-full bg-[#A36A33]" />
-
-            {/* DESCRIPCIÓN */}
 
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/90 sm:text-lg">
               Explora nuestra colección de productos y
               encuentra el diseño ideal para tu espacio.
             </p>
 
-            {/* BENEFICIOS */}
-
             <div className="mt-5 hidden flex-wrap gap-6 sm:flex">
 
               <div className="flex items-center gap-2.5">
-
                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
                   ✓
                 </div>
@@ -189,11 +188,9 @@ export default async function CatalogoPage({
                     Duraderos y resistentes
                   </p>
                 </div>
-
               </div>
 
               <div className="flex items-center gap-2.5">
-
                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
                   ◇
                 </div>
@@ -207,11 +204,9 @@ export default async function CatalogoPage({
                     Adaptado a tu espacio
                   </p>
                 </div>
-
               </div>
 
               <div className="flex items-center gap-2.5">
-
                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
                   →
                 </div>
@@ -225,7 +220,6 @@ export default async function CatalogoPage({
                     A toda España
                   </p>
                 </div>
-
               </div>
 
             </div>
@@ -250,9 +244,7 @@ export default async function CatalogoPage({
             className="grid grid-cols-1 gap-5 lg:grid-cols-[0.85fr_1.5fr]"
           >
 
-            {/* =================================================
-                CATEGORÍAS
-            ================================================= */}
+            {/* CATEGORÍAS */}
 
             <div>
 
@@ -276,14 +268,16 @@ export default async function CatalogoPage({
                     Todos los productos
                   </option>
 
-                  {categorias.map((item) => (
-                    <option
-                      key={item.handle}
-                      value={item.handle}
-                    >
-                      {item.title}
-                    </option>
-                  ))}
+                  {categorias.map(
+                    (item: ShopifyCollection) => (
+                      <option
+                        key={item.handle}
+                        value={item.handle}
+                      >
+                        {item.title}
+                      </option>
+                    )
+                  )}
 
                 </select>
 
@@ -295,9 +289,7 @@ export default async function CatalogoPage({
 
             </div>
 
-            {/* =================================================
-                BUSCADOR
-            ================================================= */}
+            {/* BUSCADOR */}
 
             <div>
 
@@ -309,8 +301,6 @@ export default async function CatalogoPage({
               </label>
 
               <div className="relative">
-
-                {/* ICONO */}
 
                 <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9AA1AC]">
 
@@ -343,8 +333,6 @@ export default async function CatalogoPage({
                   placeholder="Nombre, SKU o descripción..."
                   className="h-[68px] w-full rounded-2xl border border-[#E4DDD5] bg-white pl-14 pr-20 text-base text-[#2C241C] shadow-sm outline-none transition placeholder:text-[#A0A6B0] hover:border-[#CDBAA6] focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20"
                 />
-
-                {/* BOTÓN */}
 
                 <button
                   type="submit"
@@ -418,8 +406,6 @@ export default async function CatalogoPage({
 
       <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-6 lg:px-8">
 
-        {/* TÍTULO */}
-
         <div className="mb-7 border-t border-[#E9E2D9] pt-8">
 
           <h2 className="text-3xl font-bold tracking-tight text-[#2C241C] sm:text-4xl">
@@ -432,42 +418,38 @@ export default async function CatalogoPage({
 
         </div>
 
-        {/* =================================================
-            GRID PRODUCTOS
-        ================================================= */}
-
         {productosFiltrados.length > 0 ? (
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
 
-            {productosFiltrados.map((producto) => (
+            {productosFiltrados.map(
+              (producto: ShopifyProduct) => (
 
-              <CatalogoCard
-                key={producto.id}
-                nombre={producto.title}
-                referencia={producto.handle}
-                descripcion={producto.description}
-                imagen={
-                  producto.featuredImage?.url || null
-                }
-                precio={
-                  producto.priceRange
-                    .minVariantPrice.amount
-                }
-                moneda={
-                  producto.priceRange
-                    .minVariantPrice.currencyCode
-                }
-                disponible={
-                  producto.availableForSale
-                }
-                handle={producto.handle}
-                variants={
-                  producto.variants
-                }
-              />
+                <CatalogoCard
+                  key={producto.id}
+                  nombre={producto.title}
+                  referencia={producto.handle}
+                  descripcion={producto.description}
+                  imagen={
+                    producto.featuredImage?.url || null
+                  }
+                  precio={
+                    producto.priceRange
+                      .minVariantPrice.amount
+                  }
+                  moneda={
+                    producto.priceRange
+                      .minVariantPrice.currencyCode
+                  }
+                  disponible={
+                    producto.availableForSale
+                  }
+                  handle={producto.handle}
+                  variants={producto.variants}
+                />
 
-            ))}
+              )
+            )}
 
           </div>
 
