@@ -2,21 +2,16 @@ import { shopifyFetch } from "./shopify";
 
 export interface ShopifyVariant {
   id: string;
-
   title: string;
-
   availableForSale: boolean;
-
   price: {
     amount: string;
     currencyCode: string;
   };
-
   compareAtPrice: {
     amount: string;
     currencyCode: string;
   } | null;
-
   selectedOptions: {
     name: string;
     value: string;
@@ -31,13 +26,9 @@ export interface ShopifyCollection {
 
 export interface ShopifyProduct {
   id: string;
-
   title: string;
-
   handle: string;
-
   description: string;
-
   availableForSale: boolean;
 
   featuredImage: {
@@ -60,7 +51,6 @@ export interface ShopifyProduct {
 interface ProductsResponse {
   products: {
     nodes: ShopifyProduct[];
-
     pageInfo: {
       hasNextPage: boolean;
       endCursor: string | null;
@@ -75,7 +65,6 @@ const PRODUCTS_QUERY = `
       after: $after
     ) {
       nodes {
-
         id
         title
         handle
@@ -96,7 +85,6 @@ const PRODUCTS_QUERY = `
 
         variants(first: 100) {
           nodes {
-
             id
             title
             availableForSale
@@ -115,7 +103,6 @@ const PRODUCTS_QUERY = `
               name
               value
             }
-
           }
         }
 
@@ -126,7 +113,6 @@ const PRODUCTS_QUERY = `
             handle
           }
         }
-
       }
 
       pageInfo {
@@ -137,10 +123,7 @@ const PRODUCTS_QUERY = `
   }
 `;
 
-export async function getShopifyProducts(): Promise<
-  ShopifyProduct[]
-> {
-
+export async function getShopifyProducts(): Promise<ShopifyProduct[]> {
   const todosLosProductos: ShopifyProduct[] = [];
 
   let after: string | null = null;
@@ -148,24 +131,14 @@ export async function getShopifyProducts(): Promise<
   let continuar = true;
 
   while (continuar) {
-
-    const variables: {
-      after: string | null;
-    } = {
-      after,
-    };
-
-    const data =
+    const data: ProductsResponse =
       await shopifyFetch<ProductsResponse>(
         PRODUCTS_QUERY,
-        variables
+        { after }
       );
 
-    const productos =
-      data.products.nodes;
-
     todosLosProductos.push(
-      ...productos
+      ...data.products.nodes
     );
 
     continuar =
