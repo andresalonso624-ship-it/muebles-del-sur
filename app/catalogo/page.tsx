@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Header from "../components/Header";
 
 import CatalogoCard from "../components/CatalogoCard";
 import { getShopifyProducts } from "../lib/shopify-products";
@@ -117,7 +118,10 @@ export default async function CatalogoPage({
   // =========================================================
 
   return (
-    <main className="min-h-screen bg-[#F7F2EC]">
+    <>
+      <Header />
+
+      <main className="min-h-screen bg-[#F7F2EC]">
 
       {/* =====================================================
           HERO
@@ -127,11 +131,11 @@ export default async function CatalogoPage({
         className="
           catalog-hero
           relative
-          h-[450px]
+          h-[385px]
           w-full
           overflow-hidden
           sm:h-[480px]
-          lg:h-[390px]
+          lg:h-[420px]
         "
       >
 
@@ -182,58 +186,7 @@ export default async function CatalogoPage({
             ALINEADO CON EL CONTENIDO
         ================================================= */}
 
-        <div
-          className="
-            absolute
-            right-5
-            top-24
-            z-20
-            sm:right-8
-            sm:top-28
-            lg:right-12
-            lg:top-15
-          "
-        >
-
-          <Link
-            href="/"
-            className="
-              catalog-back-link
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-white/40
-              bg-white
-              px-5
-              py-2.5
-              text-sm
-              font-medium
-              text-[#2C241C]
-              shadow-lg
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-[#A36A33]
-              hover:text-white
-            "
-          >
-
-            <span
-              className="
-                text-lg
-                leading-none
-              "
-            >
-              ←
-            </span>
-
-            Volver al inicio
-
-          </Link>
-
-        </div>
+        
 
 
         {/* =================================================
@@ -248,13 +201,16 @@ export default async function CatalogoPage({
             flex
             h-full
             max-w-7xl
-            items-end
+            items-start
             px-5
-            pb-9
+            pt-16
+            pb-
+            sm:items-end
             sm:px-6
             sm:pb-10
+            sm:pt-0
             lg:px-8
-            lg:pb-11
+            lg:pb-4
           "
         >
 
@@ -282,7 +238,7 @@ export default async function CatalogoPage({
               <span
                 className="
                   h-[3px]
-                  w-14
+                  w-0
                   rounded-full
                   bg-[#C6922F]
                 "
@@ -297,7 +253,7 @@ export default async function CatalogoPage({
                   text-[#E1A65D]
                 "
               >
-                Catálogo
+                
               </span>
 
             </div>
@@ -311,10 +267,10 @@ export default async function CatalogoPage({
               className="
                 catalog-hero-title
                 max-w-4xl
-                text-[45px]
+                text-[38px]
                 font-extrabold
                 leading-[0.94]
-                tracking-[-0.055em]
+                tracking-[-0.045em]
                 text-white
                 sm:text-[58px]
                 lg:text-[70px]
@@ -325,6 +281,7 @@ export default async function CatalogoPage({
               Muebles que se adaptan
 
               <br />
+              
 
               <span
                 className="
@@ -344,7 +301,7 @@ export default async function CatalogoPage({
               className="
                 mt-4
                 h-[3px]
-                w-16
+                w-0
                 rounded-full
                 bg-[#C6922F]
               "
@@ -359,10 +316,11 @@ export default async function CatalogoPage({
               className="
                 catalog-hero-description
                 mt-4
-                max-w-2xl
-                text-[15px]
-                leading-6
+                max-w-[325px]
+                text-[12.5px]
+                leading-5
                 text-white/90
+                sm:max-w-2xl
                 sm:text-[17px]
                 sm:leading-7
               "
@@ -383,8 +341,14 @@ export default async function CatalogoPage({
                 mt-6
                 flex
                 flex-wrap
-                gap-x-8
-                gap-y-4
+                grid
+                grid-cols-2
+                gap-x-4
+                gap-y-3
+                sm:flex
+                sm:flex-wrap
+                sm:gap-x-8
+                sm:gap-y-4
               "
             >
 
@@ -558,90 +522,7 @@ export default async function CatalogoPage({
 
               {/* ENVÍOS */}
 
-              <div
-                className="
-                  catalog-benefit
-                  flex
-                  items-center
-                  gap-2.5
-                "
-              >
-
-                <div
-                  className="
-                    catalog-benefit-icon
-                    flex
-                    h-9
-                    w-9
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-[#C6922F]/70
-                    bg-black/20
-                    text-[#E1A65D]
-                  "
-                >
-
-                  <svg
-                    width="17"
-                    height="17"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-
-                    <path d="M3 6h12v12H3z" />
-
-                    <path d="M15 10h4l3 3v5h-7z" />
-
-                    <circle
-                      cx="7"
-                      cy="19"
-                      r="2"
-                    />
-
-                    <circle
-                      cx="18"
-                      cy="19"
-                      r="2"
-                    />
-
-                  </svg>
-
-                </div>
-
-                <div>
-
-                  <p
-                    className="
-                      catalog-benefit-title
-                      text-xs
-                      font-bold
-                      text-white
-                      sm:text-sm
-                    "
-                  >
-                    Envíos rápidos
-                  </p>
-
-                  <p
-                    className="
-                      catalog-benefit-text
-                      text-[11px]
-                      text-white/65
-                    "
-                  >
-                    A toda España
-                  </p>
-
-                </div>
-
-              </div>
+              
 
             </div>
 
@@ -990,8 +871,8 @@ export default async function CatalogoPage({
           catalog-products
           mx-auto
           max-w-7xl
-          px-5
-          pb-20
+          px-4
+          pb-12
           sm:px-6
           lg:px-8
         "
@@ -1048,7 +929,7 @@ export default async function CatalogoPage({
               catalog-products-grid
               grid
               grid-cols-2
-              gap-4
+              gap-3
               sm:grid-cols-2
               sm:gap-5
               lg:grid-cols-4
@@ -1190,6 +1071,7 @@ export default async function CatalogoPage({
 
       </section>
 
-    </main>
+      </main>
+    </>
   );
 }
