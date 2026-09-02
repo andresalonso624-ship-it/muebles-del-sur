@@ -2,12 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import CatalogoCard from "../components/CatalogoCard";
-
-import {
-  getShopifyProducts,
-  type ShopifyProduct,
-  type ShopifyCollection,
-} from "../lib/shopify-products";
+import { getShopifyProducts } from "../lib/shopify-products";
 
 interface CatalogoPageProps {
   searchParams: Promise<{
@@ -25,11 +20,10 @@ export default async function CatalogoPage({
   const categoria = params.categoria || "";
 
   // =========================================================
-  // PRODUCTOS
+  // PRODUCTOS SHOPIFY
   // =========================================================
 
-  const productosShopify: ShopifyProduct[] =
-    await getShopifyProducts();
+  const productosShopify = await getShopifyProducts();
 
   // =========================================================
   // CATEGORÍAS
@@ -37,27 +31,26 @@ export default async function CatalogoPage({
 
   const categoriasMap = new Map<
     string,
-    ShopifyCollection
+    {
+      title: string;
+      handle: string;
+    }
   >();
 
-  productosShopify.forEach(
-    (producto: ShopifyProduct) => {
-      if (!Array.isArray(producto.collections)) {
-        return;
-      }
-
-      producto.collections.forEach(
-        (collection: ShopifyCollection) => {
-          if (!categoriasMap.has(collection.handle)) {
-            categoriasMap.set(
-              collection.handle,
-              collection
-            );
-          }
-        }
-      );
+  productosShopify.forEach((producto) => {
+    if (!Array.isArray(producto.collections)) {
+      return;
     }
-  );
+
+    producto.collections.forEach((collection) => {
+      if (!categoriasMap.has(collection.handle)) {
+        categoriasMap.set(collection.handle, {
+          title: collection.title,
+          handle: collection.handle,
+        });
+      }
+    });
+  });
 
   const categorias = Array.from(
     categoriasMap.values()
@@ -74,25 +67,23 @@ export default async function CatalogoPage({
     .trim();
 
   let productosFiltrados =
-    productosShopify.filter(
-      (producto: ShopifyProduct) => {
-        if (!textoBusqueda) {
-          return true;
-        }
-
-        return (
-          producto.title
-            .toLowerCase()
-            .includes(textoBusqueda) ||
-          producto.handle
-            .toLowerCase()
-            .includes(textoBusqueda) ||
-          producto.description
-            .toLowerCase()
-            .includes(textoBusqueda)
-        );
+    productosShopify.filter((producto) => {
+      if (!textoBusqueda) {
+        return true;
       }
-    );
+
+      return (
+        producto.title
+          .toLowerCase()
+          .includes(textoBusqueda) ||
+        producto.handle
+          .toLowerCase()
+          .includes(textoBusqueda) ||
+        producto.description
+          .toLowerCase()
+          .includes(textoBusqueda)
+      );
+    });
 
   // =========================================================
   // FILTRO CATEGORÍA
@@ -100,18 +91,16 @@ export default async function CatalogoPage({
 
   if (categoria) {
     productosFiltrados =
-      productosFiltrados.filter(
-        (producto: ShopifyProduct) => {
-          if (!Array.isArray(producto.collections)) {
-            return false;
-          }
-
-          return producto.collections.some(
-            (collection: ShopifyCollection) =>
-              collection.handle === categoria
-          );
+      productosFiltrados.filter((producto) => {
+        if (!Array.isArray(producto.collections)) {
+          return false;
         }
-      );
+
+        return producto.collections.some(
+          (collection) =>
+            collection.handle === categoria
+        );
+      });
   }
 
   // =========================================================
@@ -120,8 +109,7 @@ export default async function CatalogoPage({
 
   const categoriaActual =
     categorias.find(
-      (item: ShopifyCollection) =>
-        item.handle === categoria
+      (item) => item.handle === categoria
     )?.title || "Todos los productos";
 
   // =========================================================
@@ -135,91 +123,524 @@ export default async function CatalogoPage({
           HERO
       ===================================================== */}
 
-      <section className="relative h-[260px] w-full overflow-hidden sm:h-[300px] lg:h-[340px]">
+      <section
+        className="
+          catalog-hero
+          relative
+          h-[450px]
+          w-full
+          overflow-hidden
+          sm:h-[480px]
+          lg:h-[390px]
+        "
+      >
+
+        {/* =================================================
+            IMAGEN
+        ================================================= */}
 
         <Image
           src="/images/banner/catalogo.jpg"
-          alt="Catálogo de productos"
+          alt="Catálogo de muebles y productos"
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="
+            object-cover
+            object-center
+          "
         />
 
-        <div className="absolute inset-0 bg-black/50" />
+        {/* OSCURECER */}
 
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+        <div
+          className="
+            absolute
+            inset-0
+            bg-black/45
+          "
+        />
 
-        <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 sm:px-6 lg:px-8">
+        {/* DEGRADADO INFERIOR */}
 
-          <div className="max-w-3xl text-white">
+        <div
+          className="
+            absolute
+            inset-x-0
+            bottom-0
+            h-52
+            bg-gradient-to-t
+            from-black/75
+            via-black/30
+            to-transparent
+          "
+        />
 
-            <Link
-              href="/"
-              className="inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#2C241C] shadow-md transition hover:bg-[#A36A33] hover:text-white"
+
+        {/* =================================================
+            BOTÓN VOLVER
+            ALINEADO CON EL CONTENIDO
+        ================================================= */}
+
+        <div
+          className="
+            absolute
+            right-5
+            top-24
+            z-20
+            sm:right-8
+            sm:top-28
+            lg:right-12
+            lg:top-15
+          "
+        >
+
+          <Link
+            href="/"
+            className="
+              catalog-back-link
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              border
+              border-white/40
+              bg-white
+              px-5
+              py-2.5
+              text-sm
+              font-medium
+              text-[#2C241C]
+              shadow-lg
+              transition-all
+              duration-300
+              hover:-translate-y-0.5
+              hover:bg-[#A36A33]
+              hover:text-white
+            "
+          >
+
+            <span
+              className="
+                text-lg
+                leading-none
+              "
             >
-              ← Volver al inicio
-            </Link>
+              ←
+            </span>
 
-            <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Catálogo
+            Volver al inicio
+
+          </Link>
+
+        </div>
+
+
+        {/* =================================================
+            CONTENIDO
+        ================================================= */}
+
+        <div
+          className="
+            relative
+            z-10
+            mx-auto
+            flex
+            h-full
+            max-w-7xl
+            items-end
+            px-5
+            pb-9
+            sm:px-6
+            sm:pb-10
+            lg:px-8
+            lg:pb-11
+          "
+        >
+
+          <div
+            className="
+              w-full
+              max-w-5xl
+            "
+          >
+
+            {/* =================================================
+                ETIQUETA
+            ================================================= */}
+
+            <div
+              className="
+                catalog-hero-label
+                mb-3
+                flex
+                items-center
+                gap-4
+              "
+            >
+
+              <span
+                className="
+                  h-[3px]
+                  w-14
+                  rounded-full
+                  bg-[#C6922F]
+                "
+              />
+
+              <span
+                className="
+                  text-[11px]
+                  font-bold
+                  uppercase
+                  tracking-[0.38em]
+                  text-[#E1A65D]
+                "
+              >
+                Catálogo
+              </span>
+
+            </div>
+
+
+            {/* =================================================
+                TÍTULO
+            ================================================= */}
+
+            <h1
+              className="
+                catalog-hero-title
+                max-w-4xl
+                text-[45px]
+                font-extrabold
+                leading-[0.94]
+                tracking-[-0.055em]
+                text-white
+                sm:text-[58px]
+                lg:text-[70px]
+                xl:text-[76px]
+              "
+            >
+
+              Muebles que se adaptan
+
+              <br />
+
+              <span
+                className="
+                  catalog-hero-highlight
+                  text-[#C6922F]
+                "
+              >
+                a tu espacio.
+              </span>
+
             </h1>
 
-            <div className="mt-3 h-1 w-14 rounded-full bg-[#A36A33]" />
 
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/90 sm:text-lg">
-              Explora nuestra colección de productos y
-              encuentra el diseño ideal para tu espacio.
+            {/* LÍNEA */}
+
+            <div
+              className="
+                mt-4
+                h-[3px]
+                w-16
+                rounded-full
+                bg-[#C6922F]
+              "
+            />
+
+
+            {/* =================================================
+                DESCRIPCIÓN
+            ================================================= */}
+
+            <p
+              className="
+                catalog-hero-description
+                mt-4
+                max-w-2xl
+                text-[15px]
+                leading-6
+                text-white/90
+                sm:text-[17px]
+                sm:leading-7
+              "
+            >
+              Descubre nuestra colección de productos
+              diseñados para combinar funcionalidad,
+              calidad y estilo en cada espacio.
             </p>
 
-            <div className="mt-5 hidden flex-wrap gap-6 sm:flex">
 
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
-                  ✓
+            {/* =================================================
+                BENEFICIOS
+            ================================================= */}
+
+            <div
+              className="
+                catalog-benefits
+                mt-6
+                flex
+                flex-wrap
+                gap-x-8
+                gap-y-4
+              "
+            >
+
+              {/* MATERIAL */}
+
+              <div
+                className="
+                  catalog-benefit
+                  flex
+                  items-center
+                  gap-2.5
+                "
+              >
+
+                <div
+                  className="
+                    catalog-benefit-icon
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#C6922F]/70
+                    bg-black/20
+                    text-[#E1A65D]
+                  "
+                >
+
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+
+                    <path
+                      d="
+                        M12 3
+                        l2.8 5.7
+                        6.2.9
+                        -4.5 4.4
+                        1.1 6.2
+                        L12 17.3
+                        6.4 20.2
+                        7.5 14
+                        3 9.6
+                        9.2 8.7
+                        12 3
+                      "
+                    />
+
+                  </svg>
+
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold">
+
+                  <p
+                    className="
+                      catalog-benefit-title
+                      text-xs
+                      font-bold
+                      text-white
+                      sm:text-sm
+                    "
+                  >
                     Materiales de calidad
                   </p>
 
-                  <p className="text-[11px] text-white/70">
+                  <p
+                    className="
+                      catalog-benefit-text
+                      text-[11px]
+                      text-white/65
+                    "
+                  >
                     Duraderos y resistentes
                   </p>
+
                 </div>
+
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
-                  ◇
+
+              {/* DISEÑO */}
+
+              <div
+                className="
+                  catalog-benefit
+                  flex
+                  items-center
+                  gap-2.5
+                "
+              >
+
+                <div
+                  className="
+                    catalog-benefit-icon
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#C6922F]/70
+                    bg-black/20
+                    text-[#E1A65D]
+                  "
+                >
+
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+
+                    <path d="M4 20L16.5 7.5" />
+
+                    <path d="M14 5l5 5" />
+
+                    <path d="M6 18l2 2" />
+
+                    <path d="M3 21l2-2" />
+
+                  </svg>
+
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold">
+
+                  <p
+                    className="
+                      catalog-benefit-title
+                      text-xs
+                      font-bold
+                      text-white
+                      sm:text-sm
+                    "
+                  >
                     Diseño a medida
                   </p>
 
-                  <p className="text-[11px] text-white/70">
+                  <p
+                    className="
+                      catalog-benefit-text
+                      text-[11px]
+                      text-white/65
+                    "
+                  >
                     Adaptado a tu espacio
                   </p>
+
                 </div>
+
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#A36A33] text-[#D9A066]">
-                  →
+
+              {/* ENVÍOS */}
+
+              <div
+                className="
+                  catalog-benefit
+                  flex
+                  items-center
+                  gap-2.5
+                "
+              >
+
+                <div
+                  className="
+                    catalog-benefit-icon
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#C6922F]/70
+                    bg-black/20
+                    text-[#E1A65D]
+                  "
+                >
+
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+
+                    <path d="M3 6h12v12H3z" />
+
+                    <path d="M15 10h4l3 3v5h-7z" />
+
+                    <circle
+                      cx="7"
+                      cy="19"
+                      r="2"
+                    />
+
+                    <circle
+                      cx="18"
+                      cy="19"
+                      r="2"
+                    />
+
+                  </svg>
+
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold">
+
+                  <p
+                    className="
+                      catalog-benefit-title
+                      text-xs
+                      font-bold
+                      text-white
+                      sm:text-sm
+                    "
+                  >
                     Envíos rápidos
                   </p>
 
-                  <p className="text-[11px] text-white/70">
+                  <p
+                    className="
+                      catalog-benefit-text
+                      text-[11px]
+                      text-white/65
+                    "
+                  >
                     A toda España
                   </p>
+
                 </div>
+
               </div>
 
             </div>
@@ -230,27 +651,58 @@ export default async function CatalogoPage({
 
       </section>
 
+
       {/* =====================================================
           FILTROS
       ===================================================== */}
 
-      <section className="bg-[#F7F2EC]">
+      <section
+        className="
+          catalog-filters
+          bg-[#F7F2EC]
+        "
+      >
 
-        <div className="mx-auto max-w-7xl px-5 py-7 sm:px-6 lg:px-8 lg:py-9">
+        <div
+          className="
+            mx-auto
+            max-w-7xl
+            px-5
+            py-7
+            sm:px-6
+            lg:px-8
+            lg:py-8
+          "
+        >
 
           <form
             method="GET"
             action="/catalogo"
-            className="grid grid-cols-1 gap-5 lg:grid-cols-[0.85fr_1.5fr]"
+            className="
+              grid
+              grid-cols-1
+              gap-4
+              lg:grid-cols-[0.85fr_1.5fr]
+            "
           >
 
-            {/* CATEGORÍAS */}
+            {/* =================================================
+                CATEGORÍAS
+            ================================================= */}
 
             <div>
 
               <label
                 htmlFor="categoria"
-                className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-[#A36A33]"
+                className="
+                  mb-2
+                  block
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#A36A33]
+                "
               >
                 Categorías
               </label>
@@ -261,27 +713,57 @@ export default async function CatalogoPage({
                   id="categoria"
                   name="categoria"
                   defaultValue={categoria}
-                  className="h-[68px] w-full appearance-none rounded-2xl border border-[#E4DDD5] bg-white px-5 pr-12 text-base font-semibold text-[#2C241C] shadow-sm outline-none transition hover:border-[#CDBAA6] focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20"
+                  className="
+                    h-[62px]
+                    w-full
+                    appearance-none
+                    rounded-2xl
+                    border
+                    border-[#E4DDD5]
+                    bg-white
+                    px-5
+                    pr-12
+                    text-base
+                    font-semibold
+                    text-[#2C241C]
+                    shadow-sm
+                    outline-none
+                    transition
+                    hover:border-[#CDBAA6]
+                    focus:border-[#A36A33]
+                    focus:ring-2
+                    focus:ring-[#A36A33]/20
+                  "
                 >
 
                   <option value="">
                     Todos los productos
                   </option>
 
-                  {categorias.map(
-                    (item: ShopifyCollection) => (
-                      <option
-                        key={item.handle}
-                        value={item.handle}
-                      >
-                        {item.title}
-                      </option>
-                    )
-                  )}
+                  {categorias.map((item) => (
+
+                    <option
+                      key={item.handle}
+                      value={item.handle}
+                    >
+                      {item.title}
+                    </option>
+
+                  ))}
 
                 </select>
 
-                <span className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-xl text-[#2C241C]">
+                <span
+                  className="
+                    pointer-events-none
+                    absolute
+                    right-5
+                    top-1/2
+                    -translate-y-1/2
+                    text-xl
+                    text-[#2C241C]
+                  "
+                >
                   ⌄
                 </span>
 
@@ -289,20 +771,40 @@ export default async function CatalogoPage({
 
             </div>
 
-            {/* BUSCADOR */}
+
+            {/* =================================================
+                BUSCADOR
+            ================================================= */}
 
             <div>
 
               <label
                 htmlFor="buscar"
-                className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-[#2C241C]"
+                className="
+                  mb-2
+                  block
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#2C241C]
+                "
               >
                 Buscar producto
               </label>
 
               <div className="relative">
 
-                <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9AA1AC]">
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    left-5
+                    top-1/2
+                    -translate-y-1/2
+                    text-[#9AA1AC]
+                  "
+                >
 
                   <svg
                     width="21"
@@ -314,6 +816,7 @@ export default async function CatalogoPage({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
+
                     <circle
                       cx="11"
                       cy="11"
@@ -321,9 +824,11 @@ export default async function CatalogoPage({
                     />
 
                     <path d="m20 20-4-4" />
+
                   </svg>
 
                 </div>
+
 
                 <input
                   id="buscar"
@@ -331,18 +836,55 @@ export default async function CatalogoPage({
                   name="buscar"
                   defaultValue={buscar}
                   placeholder="Nombre, SKU o descripción..."
-                  className="h-[68px] w-full rounded-2xl border border-[#E4DDD5] bg-white pl-14 pr-20 text-base text-[#2C241C] shadow-sm outline-none transition placeholder:text-[#A0A6B0] hover:border-[#CDBAA6] focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20"
+                  className="
+                    h-[62px]
+                    w-full
+                    rounded-2xl
+                    border
+                    border-[#E4DDD5]
+                    bg-white
+                    pl-14
+                    pr-20
+                    text-base
+                    text-[#2C241C]
+                    shadow-sm
+                    outline-none
+                    transition
+                    placeholder:text-[#A0A6B0]
+                    hover:border-[#CDBAA6]
+                    focus:border-[#A36A33]
+                    focus:ring-2
+                    focus:ring-[#A36A33]/20
+                  "
                 />
+
+
+                {/* BOTÓN BUSCAR */}
 
                 <button
                   type="submit"
                   aria-label="Buscar producto"
-                  className="absolute right-2 top-2 flex h-14 w-14 items-center justify-center rounded-xl bg-[#A36A33] text-white shadow-sm transition hover:bg-[#7A4E24]"
+                  className="
+                    absolute
+                    right-2
+                    top-2
+                    flex
+                    h-[46px]
+                    w-[46px]
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-[#A36A33]
+                    text-white
+                    shadow-sm
+                    transition
+                    hover:bg-[#7A4E24]
+                  "
                 >
 
                   <svg
-                    width="20"
-                    height="20"
+                    width="19"
+                    height="19"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -350,6 +892,7 @@ export default async function CatalogoPage({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
+
                     <circle
                       cx="11"
                       cy="11"
@@ -357,6 +900,7 @@ export default async function CatalogoPage({
                     />
 
                     <path d="m20 20-4-4" />
+
                   </svg>
 
                 </button>
@@ -367,17 +911,44 @@ export default async function CatalogoPage({
 
           </form>
 
-          {/* INFORMACIÓN */}
 
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          {/* =================================================
+              INFORMACIÓN
+          ================================================= */}
 
-            <p className="text-sm text-gray-600">
+          <div
+            className="
+              mt-4
+              flex
+              flex-wrap
+              items-center
+              justify-between
+              gap-3
+            "
+          >
 
-              <span className="font-semibold text-[#2C241C]">
+            <p
+              className="
+                text-sm
+                text-gray-600
+              "
+            >
+
+              <span
+                className="
+                  font-semibold
+                  text-[#2C241C]
+                "
+              >
                 {categoriaActual}
               </span>
 
-              <span className="mx-2 text-gray-400">
+              <span
+                className="
+                  mx-2
+                  text-gray-400
+                "
+              >
                 •
               </span>
 
@@ -385,13 +956,22 @@ export default async function CatalogoPage({
 
             </p>
 
+
             {(buscar || categoria) && (
+
               <Link
                 href="/catalogo"
-                className="text-sm font-semibold text-[#A36A33] hover:text-[#7A4E24] hover:underline"
+                className="
+                  text-sm
+                  font-semibold
+                  text-[#A36A33]
+                  hover:text-[#7A4E24]
+                  hover:underline
+                "
               >
                 Limpiar filtros
               </Link>
+
             )}
 
           </div>
@@ -400,79 +980,206 @@ export default async function CatalogoPage({
 
       </section>
 
+
       {/* =====================================================
           PRODUCTOS
       ===================================================== */}
 
-      <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-6 lg:px-8">
+      <section
+        className="
+          catalog-products
+          mx-auto
+          max-w-7xl
+          px-5
+          pb-20
+          sm:px-6
+          lg:px-8
+        "
+      >
 
-        <div className="mb-7 border-t border-[#E9E2D9] pt-8">
+        {/* =================================================
+            ENCABEZADO PRODUCTOS
+        ================================================= */}
 
-          <h2 className="text-3xl font-bold tracking-tight text-[#2C241C] sm:text-4xl">
+        <div
+          className="
+            catalog-products-header
+            mb-6
+            border-t
+            border-[#E9E2D9]
+            pt-7
+          "
+        >
+
+          <h2
+            className="
+              text-3xl
+              font-extrabold
+              tracking-[-0.035em]
+              text-[#2C241C]
+              sm:text-4xl
+            "
+          >
             {categoriaActual}
           </h2>
 
-          <p className="mt-2 text-sm text-gray-500 sm:text-base">
+          <p
+            className="
+              mt-1.5
+              text-sm
+              text-gray-500
+              sm:text-base
+            "
+          >
             {productosFiltrados.length} productos encontrados
           </p>
 
         </div>
 
+
+        {/* =================================================
+            GRID PRODUCTOS
+        ================================================= */}
+
         {productosFiltrados.length > 0 ? (
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+          <div
+            className="
+              catalog-products-grid
+              grid
+              grid-cols-2
+              gap-4
+              sm:grid-cols-2
+              sm:gap-5
+              lg:grid-cols-4
+              lg:gap-6
+            "
+          >
 
-            {productosFiltrados.map(
-              (producto: ShopifyProduct) => (
+            {productosFiltrados.map((producto) => (
 
-                <CatalogoCard
-                  key={producto.id}
-                  nombre={producto.title}
-                  referencia={producto.handle}
-                  descripcion={producto.description}
-                  imagen={
-                    producto.featuredImage?.url || null
-                  }
-                  precio={
-                    producto.priceRange
-                      .minVariantPrice.amount
-                  }
-                  moneda={
-                    producto.priceRange
-                      .minVariantPrice.currencyCode
-                  }
-                  disponible={
-                    producto.availableForSale
-                  }
-                  handle={producto.handle}
-                  variants={producto.variants}
-                />
+              <CatalogoCard
+                key={producto.id}
 
-              )
-            )}
+                nombre={
+                  producto.title
+                }
+
+                referencia={
+                  producto.handle
+                }
+
+                descripcion={
+                  producto.description
+                }
+
+                imagen={
+                  producto.featuredImage?.url ||
+                  null
+                }
+
+                precio={
+                  producto.priceRange
+                    .minVariantPrice.amount
+                }
+
+                moneda={
+                  producto.priceRange
+                    .minVariantPrice.currencyCode
+                }
+
+                disponible={
+                  producto.availableForSale
+                }
+
+                handle={
+                  producto.handle
+                }
+
+                variants={
+                  producto.variants
+                }
+              />
+
+            ))}
 
           </div>
 
         ) : (
 
-          <div className="rounded-3xl border border-[#E9E2D9] bg-white px-6 py-16 text-center shadow-sm">
+          /* =================================================
+             SIN PRODUCTOS
+          ================================================= */
 
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#F7F2EC] text-2xl">
+          <div
+            className="
+              rounded-3xl
+              border
+              border-[#E9E2D9]
+              bg-white
+              px-6
+              py-16
+              text-center
+              shadow-sm
+            "
+          >
+
+            <div
+              className="
+                mx-auto
+                flex
+                h-16
+                w-16
+                items-center
+                justify-center
+                rounded-full
+                bg-[#F7F2EC]
+                text-2xl
+              "
+            >
               🔍
             </div>
 
-            <h3 className="mt-5 text-2xl font-bold text-[#2C241C]">
+
+            <h3
+              className="
+                mt-5
+                text-2xl
+                font-bold
+                text-[#2C241C]
+              "
+            >
               No encontramos productos
             </h3>
 
-            <p className="mx-auto mt-2 max-w-md text-gray-500">
-              Prueba con otro término de búsqueda o
-              selecciona otra categoría.
+
+            <p
+              className="
+                mx-auto
+                mt-2
+                max-w-md
+                text-gray-500
+              "
+            >
+              Prueba con otro término de búsqueda
+              o selecciona otra categoría.
             </p>
+
 
             <Link
               href="/catalogo"
-              className="mt-6 inline-flex rounded-xl bg-[#A36A33] px-6 py-3 font-semibold text-white transition hover:bg-[#7A4E24]"
+              className="
+                mt-6
+                inline-flex
+                rounded-xl
+                bg-[#A36A33]
+                px-6
+                py-3
+                font-semibold
+                text-white
+                transition
+                hover:bg-[#7A4E24]
+              "
             >
               Ver todos los productos
             </Link>
