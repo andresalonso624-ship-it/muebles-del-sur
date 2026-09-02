@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import Header from "../components/Header";
 import { useEffect, useState } from "react";
 
 const proyectos = [
@@ -20,55 +21,32 @@ const proyectos = [
 ];
 
 export default function ProyectosPage() {
-  const [imagenAbierta, setImagenAbierta] = useState<number | null>(null);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [imagenAbierta, setImagenAbierta] = useState<string | null>(null);
 
   // =========================================================
-  // NAVEGACIÓN CON TECLADO + CERRAR CON ESC
+  // CERRAR CON ESC
   // =========================================================
 
   useEffect(() => {
-    const manejarTeclado = (event: KeyboardEvent) => {
-      if (imagenAbierta === null) return;
-
+    const manejarEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setImagenAbierta(null);
       }
-
-      if (event.key === "ArrowLeft") {
-        setImagenAbierta((actual) => {
-          if (actual === null) return null;
-
-          return actual === 0
-            ? proyectos.length - 1
-            : actual - 1;
-        });
-      }
-
-      if (event.key === "ArrowRight") {
-        setImagenAbierta((actual) => {
-          if (actual === null) return null;
-
-          return actual === proyectos.length - 1
-            ? 0
-            : actual + 1;
-        });
-      }
     };
 
-    window.addEventListener("keydown", manejarTeclado);
+    window.addEventListener("keydown", manejarEscape);
 
     return () => {
-      window.removeEventListener("keydown", manejarTeclado);
+      window.removeEventListener("keydown", manejarEscape);
     };
-  }, [imagenAbierta]);
+  }, []);
 
   // =========================================================
   // BLOQUEAR SCROLL CUANDO LA IMAGEN ESTÁ ABIERTA
   // =========================================================
 
   useEffect(() => {
-    if (imagenAbierta !== null) {
+    if (imagenAbierta) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -79,56 +57,19 @@ export default function ProyectosPage() {
     };
   }, [imagenAbierta]);
 
-  // =========================================================
-  // IMAGEN ANTERIOR
-  // =========================================================
-
-  const imagenAnterior = () => {
-    setImagenAbierta((actual) => {
-      if (actual === null) return null;
-
-      return actual === 0
-        ? proyectos.length - 1
-        : actual - 1;
-    });
-  };
-
-  // =========================================================
-  // IMAGEN SIGUIENTE
-  // =========================================================
-
-  const imagenSiguiente = () => {
-    setImagenAbierta((actual) => {
-      if (actual === null) return null;
-
-      return actual === proyectos.length - 1
-        ? 0
-        : actual + 1;
-    });
-  };
-
   return (
-    <main className="min-h-screen bg-[#F8F5F1]">
+    <>
+      <Header />
+
+      <main className="min-h-screen bg-[#F8F5F1]">
 
       {/* =====================================================
           HERO / CABECERA DE PROYECTOS
       ===================================================== */}
 
-      <section
-        className="
-          relative
-          h-[400px]
-          overflow-hidden
+      <section className="relative min-h-[330px] overflow-hidden sm:min-h-[400px] lg:min-h-[300px]">
 
-          sm:h-[400px]
-
-          lg:h-[350px]
-        "
-      >
-
-        {/* =================================================
-            IMAGEN DE FONDO
-        ================================================= */}
+        {/* IMAGEN DE FONDO */}
 
         <Image
           src="/images/proyectos-hero.jpg"
@@ -138,187 +79,80 @@ export default function ProyectosPage() {
           sizes="100vw"
           className="
             object-cover
-            object-center
+            object-[85%_center]
+            sm:object-center
           "
         />
 
-        {/* =================================================
-            OSCURECIMIENTO
-        ================================================= */}
+        {/* OSCURECIMIENTO */}
 
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/45" />
 
-        {/* =================================================
-            DEGRADADO INFERIOR
-        ================================================= */}
+        {/* DEGRADADO INFERIOR */}
 
-        <div
-          className="
-            absolute
-            inset-x-0
-            bottom-0
-            h-40
-            bg-gradient-to-t
-            from-black/50
-            to-transparent
-          "
-        />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/40 to-transparent" />
 
-        {/* =================================================
-            CONTENIDO PRINCIPAL
-        ================================================= */}
+        {/* CONTENIDO */}
 
         <div
           className="
             relative
             mx-auto
             flex
-            h-full
+            min-h-[100px]
             max-w-[1500px]
             flex-col
-            justify-center
-
-            px-6
-            pb-12
-            pt-24
-
+            justify-end
+            px-4
+            pb-10
+            pt-[90px]
+            sm:min-h-[400px]
             sm:px-10
             sm:pb-16
-            sm:pt-10
-
-            lg:px-10
+            sm:pt-[112px]
+            lg:px-16
             lg:pb-20
-            lg:pt-10
+            lg:pt-0
           "
         >
 
-          {/* =================================================
-              BOTÓN VOLVER
-              AHORA SIEMPRE ARRIBA A LA DERECHA
-          ================================================= */}
+          {/* ETIQUETA */}
 
-          <div
-            className="
-              absolute
-              right-5
-              top-5
-              z-20
+          <div className="mt-2 flex items-center gap-3 sm:mt-10 sm:gap-4">
 
-              sm:right-10
-              sm:top-8
-            "
-          >
-            <Link
-              href="/"
-              className="
-                inline-flex
-                items-center
-                gap-2
-
-                rounded-full
-
-                border
-                border-white/40
-
-                bg-black/20
-
-                px-4
-                py-2.5
-
-                text-xs
-                font-semibold
-                text-white
-
-                backdrop-blur-md
-
-                shadow-lg
-
-                transition-all
-                duration-300
-
-                hover:bg-white
-                hover:text-[#2C241C]
-
-                sm:px-6
-                sm:py-2.5
-                sm:text-sm
-              "
-            >
-              <span className="text-base sm:text-lg">
-                ←
-              </span>
-
-              <span>
-                Volver al inicio
-              </span>
-            </Link>
-          </div>
-
-
-          {/* =================================================
-              ETIQUETA
-          ================================================= */}
-
-          <div
-            className="
-              mt-8
-              flex
-              items-center
-              gap-4
-
-              sm:mt-6
-
-              lg:mt-4
-            "
-          >
-
-            <span
-              className="
-                h-[2px]
-                w-10
-                shrink-0
-                bg-[#D49A32]
-
-                sm:w-12
-              "
-            />
+            <span className="h-[2px] w-12 bg-[#D49A32]" />
 
             <p
               className="
-                text-[10px]
+                text-xs
                 font-bold
                 uppercase
-                tracking-[0.20em]
+                tracking-[0.28em]
                 text-white
-
-                sm:text-xs
-                sm:tracking-[0.28em]
+                sm:text-sm
               "
             >
-              Estanterías MSC del Sur
+              
+              
             </p>
 
           </div>
 
-
-          {/* =================================================
-              TÍTULO
-          ================================================= */}
+          {/* TÍTULO */}
 
           <h1
             className="
-              mt-4
-
-              max-w-[900px]
-
-              text-[43px]
+              mt-3
+              max-w-[330px]
+              text-[42px]
               font-extrabold
-              leading-[0.94]
-              tracking-[-0.04em]
+              leading-[0.95]
+              sm:mt-5
+              sm:max-w-4xl
+              sm:text-5xl
+              tracking-[-0.035em]
               text-white
-
               sm:text-6xl
-
               lg:text-7xl
             "
           >
@@ -328,38 +162,21 @@ export default function ProyectosPage() {
             </span>
           </h1>
 
+          {/* LÍNEA */}
 
-          {/* =================================================
-              LÍNEA DECORATIVA
-          ================================================= */}
+          <div className="mt-7 h-1 w-20 rounded-full bg-[#D49A32]" />
 
-          <div
-            className="
-              mt-6
-              h-1
-              w-16
-              rounded-full
-              bg-[#D49A32]
-
-              sm:w-20
-            "
-          />
-
-
-          {/* =================================================
-              DESCRIPCIÓN
-          ================================================= */}
+          {/* DESCRIPCIÓN */}
 
           <p
             className="
               mt-4
-
-              max-w-[650px]
-
+              max-w-[320px]
               text-sm
               leading-6
               text-white/90
-
+              sm:mt-5
+              sm:max-w-2xl
               sm:text-lg
               sm:leading-8
             "
@@ -367,30 +184,7 @@ export default function ProyectosPage() {
             Una selección de algunos de nuestros trabajos realizados.
           </p>
 
-
-          {/* =================================================
-              INDICADORES MÓVIL
-          ================================================= */}
-
-          <div
-            className="
-              mt-6
-              flex
-              items-center
-              gap-2
-
-              sm:hidden
-            "
-          >
-            <span className="h-[3px] w-10 rounded-full bg-[#D49A32]" />
-
-            <span className="h-[3px] w-3 rounded-full bg-white/70" />
-
-            <span className="h-[3px] w-3 rounded-full bg-white/70" />
-          </div>
-
         </div>
-
       </section>
 
 
@@ -402,13 +196,10 @@ export default function ProyectosPage() {
         className="
           mx-auto
           max-w-[1500px]
-
-          px-5
-          py-8
-
+          px-4
+          py-6
           sm:px-10
           sm:py-10
-
           lg:px-16
           lg:py-14
         "
@@ -419,11 +210,9 @@ export default function ProyectosPage() {
             grid
             grid-cols-1
             gap-4
-
             sm:grid-cols-2
-
+            sm:gap-5
             lg:grid-cols-3
-            lg:gap-5
           "
         >
 
@@ -432,9 +221,8 @@ export default function ProyectosPage() {
             <button
               key={imagen}
               type="button"
-              onClick={() => setImagenAbierta(index)}
+              onClick={() => setImagenAbierta(imagen)}
               aria-label={`Ampliar proyecto ${index + 1}`}
-
               className="
                 group
                 relative
@@ -444,17 +232,12 @@ export default function ProyectosPage() {
                 rounded-2xl
                 bg-white
                 text-left
-
                 shadow-sm
-
                 outline-none
-
                 transition-all
                 duration-500
-
                 hover:-translate-y-1
                 hover:shadow-xl
-
                 focus:ring-2
                 focus:ring-[#A36A33]
                 focus:ring-offset-2
@@ -463,36 +246,24 @@ export default function ProyectosPage() {
 
               {/* IMAGEN */}
 
-              <div
-                className="
-                  relative
-                  aspect-[16/10]
-                  w-full
-                  overflow-hidden
-                "
-              >
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
 
                 <Image
                   src={imagen}
                   alt={`Proyecto ${index + 1}`}
                   fill
-
                   sizes="
                     (max-width: 640px) 100vw,
                     (max-width: 1024px) 50vw,
                     33vw
                   "
-
                   className="
                     object-cover
-
                     transition-transform
                     duration-700
-
                     group-hover:scale-[1.04]
                   "
                 />
-
 
                 {/* EFECTO AL PASAR EL RATÓN */}
 
@@ -503,12 +274,9 @@ export default function ProyectosPage() {
                     flex
                     items-center
                     justify-center
-
                     bg-black/0
-
                     transition-all
                     duration-500
-
                     group-hover:bg-black/20
                   "
                 >
@@ -518,27 +286,18 @@ export default function ProyectosPage() {
                       flex
                       h-12
                       w-12
-
                       scale-90
-
                       items-center
                       justify-center
-
                       rounded-full
-
                       bg-white/95
-
                       text-2xl
                       font-light
                       text-[#2C241C]
-
                       opacity-0
-
                       shadow-xl
-
                       transition-all
                       duration-500
-
                       group-hover:scale-100
                       group-hover:opacity-100
                     "
@@ -563,98 +322,51 @@ export default function ProyectosPage() {
           VISOR DE IMAGEN
       ===================================================== */}
 
-      {imagenAbierta !== null && (
+      {imagenAbierta && (
 
         <div
           className="
             fixed
             inset-0
             z-[100]
-
             flex
             items-center
             justify-center
-
             bg-black/90
-
             p-4
-
             sm:p-8
           "
-
           onClick={() => setImagenAbierta(null)}
-
-          /* DESLIZAR EN MÓVIL */
-
-          onTouchStart={(event) => {
-            setTouchStartX(event.touches[0].clientX);
-          }}
-
-          onTouchEnd={(event) => {
-
-            if (touchStartX === null) return;
-
-            const touchEndX =
-              event.changedTouches[0].clientX;
-
-            const diferencia =
-              touchStartX - touchEndX;
-
-            if (Math.abs(diferencia) > 50) {
-
-              if (diferencia > 0) {
-                imagenSiguiente();
-              } else {
-                imagenAnterior();
-              }
-
-            }
-
-            setTouchStartX(null);
-          }}
         >
 
-          {/* =================================================
-              BOTÓN CERRAR
-          ================================================= */}
+          {/* BOTÓN CERRAR */}
 
           <button
             type="button"
             onClick={() => setImagenAbierta(null)}
             aria-label="Cerrar imagen"
-
             className="
               absolute
               right-4
               top-4
               z-[110]
-
               flex
               h-12
               w-12
-
               items-center
               justify-center
-
               rounded-full
-
               bg-white
-
               text-3xl
               font-light
               leading-none
-
               text-[#2C241C]
-
               shadow-xl
-
               transition-all
               duration-300
-
               hover:scale-105
               hover:bg-[#A36A33]
               hover:text-white
-
               sm:right-8
               sm:top-8
             "
@@ -662,146 +374,21 @@ export default function ProyectosPage() {
             ×
           </button>
 
-
-          {/* =================================================
-              FLECHA ANTERIOR
-          ================================================= */}
-
-          <button
-            type="button"
-
-            onClick={(event) => {
-              event.stopPropagation();
-              imagenAnterior();
-            }}
-
-            aria-label="Imagen anterior"
-
-            className="
-              absolute
-              left-3
-              top-1/2
-              z-[110]
-
-              flex
-              h-11
-              w-11
-
-              -translate-y-1/2
-
-              items-center
-              justify-center
-
-              rounded-full
-
-              bg-white/90
-
-              text-4xl
-              font-light
-              leading-none
-
-              text-[#2C241C]
-
-              shadow-xl
-
-              transition-all
-              duration-300
-
-              hover:scale-105
-              hover:bg-[#A36A33]
-              hover:text-white
-
-              sm:left-8
-              sm:h-14
-              sm:w-14
-            "
-          >
-            ‹
-          </button>
-
-
-          {/* =================================================
-              FLECHA SIGUIENTE
-          ================================================= */}
-
-          <button
-            type="button"
-
-            onClick={(event) => {
-              event.stopPropagation();
-              imagenSiguiente();
-            }}
-
-            aria-label="Imagen siguiente"
-
-            className="
-              absolute
-              right-3
-              top-1/2
-              z-[110]
-
-              flex
-              h-11
-              w-11
-
-              -translate-y-1/2
-
-              items-center
-              justify-center
-
-              rounded-full
-
-              bg-white/90
-
-              text-4xl
-              font-light
-              leading-none
-
-              text-[#2C241C]
-
-              shadow-xl
-
-              transition-all
-              duration-300
-
-              hover:scale-105
-              hover:bg-[#A36A33]
-              hover:text-white
-
-              sm:right-8
-              sm:h-14
-              sm:w-14
-            "
-          >
-            ›
-          </button>
-
-
-          {/* =================================================
-              IMAGEN AMPLIADA
-          ================================================= */}
+          {/* IMAGEN AMPLIADA */}
 
           <div
             className="
               relative
-
-              h-[80vh]
-              w-[90vw]
-
+              h-[85vh]
+              w-[95vw]
               max-w-[1600px]
-
-              sm:h-[85vh]
-              sm:w-[95vw]
             "
-
-            onClick={(event) => {
-              event.stopPropagation();
-            }}
+            onClick={(event) => event.stopPropagation()}
           >
 
             <Image
-              src={proyectos[imagenAbierta]}
-              alt={`Proyecto ${imagenAbierta + 1} ampliado`}
+              src={imagenAbierta}
+              alt="Proyecto ampliado"
               fill
               sizes="95vw"
               className="object-contain"
@@ -814,6 +401,7 @@ export default function ProyectosPage() {
 
       )}
 
-    </main>
+      </main>
+    </>
   );
 }
