@@ -1,13 +1,12 @@
 import { shopifyFetch } from "./shopify";
 
-/* =========================================================
-   TIPOS
-========================================================= */
+// =========================================================
+// VARIANTE
+// =========================================================
 
 export interface ShopifyVariant {
   id: string;
   title: string;
-
   availableForSale: boolean;
 
   price: {
@@ -26,18 +25,57 @@ export interface ShopifyVariant {
   }[];
 }
 
-export interface ShopifyCollection {
-  id: string;
-  title: string;
-  handle: string;
-}
+// =========================================================
+// IMAGEN
+// =========================================================
 
 export interface ShopifyImage {
   url: string;
   altText: string | null;
 }
 
+// =========================================================
+// COLECCIÓN
+// =========================================================
+
+export interface ShopifyCollection {
+  id: string;
+  title: string;
+  handle: string;
+}
+
+// =========================================================
+// PRODUCTO
+// =========================================================
+
 export interface ShopifyProduct {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  availableForSale: boolean;
+
+  featuredImage: ShopifyImage | null;
+
+  images: ShopifyImage[];
+
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+
+  variants: ShopifyVariant[];
+
+  collections: ShopifyCollection[];
+}
+
+// =========================================================
+// PRODUCTO DEVUELTO POR SHOPIFY
+// =========================================================
+
+interface ShopifyProductNode {
   id: string;
   title: string;
   handle: string;
@@ -57,23 +95,22 @@ export interface ShopifyProduct {
     };
   };
 
-  variants: ShopifyVariant[];
+  variants: {
+    nodes: ShopifyVariant[];
+  };
 
-  collections: ShopifyCollection[];
-
-  seo?: {
-    title: string | null;
-    description: string | null;
+  collections: {
+    nodes: ShopifyCollection[];
   };
 }
 
-/* =========================================================
-   RESPUESTA DE PRODUCTOS
-========================================================= */
+// =========================================================
+// RESPUESTA DE SHOPIFY
+// =========================================================
 
 interface ProductsResponse {
   products: {
-    nodes: ShopifyProduct[];
+    nodes: ShopifyProductNode[];
 
     pageInfo: {
       hasNextPage: boolean;
@@ -82,17 +119,9 @@ interface ProductsResponse {
   };
 }
 
-/* =========================================================
-   RESPUESTA DE PRODUCTO INDIVIDUAL
-========================================================= */
-
-interface ProductResponse {
-  product: ShopifyProduct | null;
-}
-
-/* =========================================================
-   QUERY PRODUCTOS
-========================================================= */
+// =========================================================
+// QUERY SHOPIFY
+// =========================================================
 
 const PRODUCTS_QUERY = `
   query GetProducts($after: String) {
@@ -156,11 +185,6 @@ const PRODUCTS_QUERY = `
             handle
           }
         }
-
-        seo {
-          title
-          description
-        }
       }
 
       pageInfo {
@@ -171,9 +195,9 @@ const PRODUCTS_QUERY = `
   }
 `;
 
-/* =========================================================
-   OBTENER TODOS LOS PRODUCTOS
-========================================================= */
+// =========================================================
+// OBTENER TODOS LOS PRODUCTOS
+// =========================================================
 
 export async function getShopifyProducts(): Promise<
   ShopifyProduct[]
@@ -182,9 +206,9 @@ export async function getShopifyProducts(): Promise<
 
   let after: string | null = null;
 
-  let continuar = true;
-
-  while (continuar) {
+  while (true) {
+    // IMPORTANTE:
+    // El tipo explícito de data evita el error TS7022.
     const data: ProductsResponse =
       await shopifyFetch<ProductsResponse>(
         PRODUCTS_QUERY,
@@ -193,105 +217,60 @@ export async function getShopifyProducts(): Promise<
         }
       );
 
+    const productos: ShopifyProduct[] =
+      data.products.nodes.map(
+        (
+          producto: ShopifyProductNode
+        ): ShopifyProduct => ({
+          id: producto.id,
+
+          title: producto.title,
+
+          handle: producto.handle,
+
+          description: producto.description,
+
+          availableForSale:
+            producto.availableForSale,
+
+          featuredImage:
+            producto.featuredImage,
+
+          // Todas las fotos del producto
+          images:
+            producto.images?.nodes ?? [],
+
+          priceRange:
+            producto.priceRange,
+
+          // Todas las variantes
+          variants:
+            producto.variants?.nodes ?? [],
+
+          collections:
+            producto.collections?.nodes ?? [],
+        })
+      );
+
     todosLosProductos.push(
-      ...data.products.nodes
+      ...productos
     );
 
-    continuar =
-      data.products.pageInfo.hasNextPage;
+    // Si no hay más páginas, terminamos
+    if (
+      !data.products.pageInfo.hasNextPage
+    ) {
+      break;
+    }
 
     after =
       data.products.pageInfo.endCursor;
+
+    // Seguridad adicional
+    if (!after) {
+      break;
+    }
   }
 
   return todosLosProductos;
-}
-
-/* =========================================================
-   QUERY PRODUCTO INDIVIDUAL
-========================================================= */
-
-const PRODUCT_BY_HANDLE_QUERY = `
-  query GetProductByHandle($handle: String!) {
-    product(handle: $handle) {
-      id
-      title
-      handle
-      description
-      availableForSale
-
-      featuredImage {
-        url
-        altText
-      }
-
-      images(first: 20) {
-        nodes {
-          url
-          altText
-        }
-      }
-
-      priceRange {
-        minVariantPrice {
-          amount
-          currencyCode
-        }
-      }
-
-      variants(first: 100) {
-        nodes {
-          id
-          title
-          availableForSale
-
-          price {
-            amount
-            currencyCode
-          }
-
-          compareAtPrice {
-            amount
-            currencyCode
-          }
-
-          selectedOptions {
-            name
-            value
-          }
-        }
-      }
-
-      collections(first: 20) {
-        nodes {
-          id
-          title
-          handle
-        }
-      }
-
-      seo {
-        title
-        description
-      }
-    }
-  }
-`;
-
-/* =========================================================
-   OBTENER PRODUCTO POR HANDLE
-========================================================= */
-
-export async function getProductByHandle(
-  handle: string
-): Promise<ShopifyProduct | null> {
-  const data: ProductResponse =
-    await shopifyFetch<ProductResponse>(
-      PRODUCT_BY_HANDLE_QUERY,
-      {
-        handle,
-      }
-    );
-
-  return data.product;
 }

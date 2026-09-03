@@ -1,47 +1,40 @@
-// app/lib/shopify.ts
+const getEnv = (name: string): string => {
+  const value = process.env[name];
 
-const SHOPIFY_STORE_DOMAIN =
-  process.env.SHOPIFY_STORE_DOMAIN;
+  if (!value) {
+    throw new Error(
+      `Falta la variable de entorno: ${name}`
+    );
+  }
 
-const SHOPIFY_STOREFRONT_PUBLIC_TOKEN =
-  process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN;
+  return value;
+};
 
-// =========================================================
-// VALIDAR VARIABLES DE ENTORNO
-// =========================================================
+const domain = getEnv(
+  "SHOPIFY_STORE_DOMAIN"
+);
 
-if (!SHOPIFY_STORE_DOMAIN) {
-  throw new Error(
-    "Falta SHOPIFY_STORE_DOMAIN en las variables de entorno."
-  );
+const token = getEnv(
+  "SHOPIFY_STOREFRONT_PUBLIC_TOKEN"
+);
+
+const endpoint =
+  `https://${domain}/api/2026-07/graphql.json`;
+
+interface ShopifyError {
+  message: string;
 }
 
-if (!SHOPIFY_STOREFRONT_PUBLIC_TOKEN) {
-  throw new Error(
-    "Falta SHOPIFY_STOREFRONT_PUBLIC_TOKEN en las variables de entorno."
-  );
+interface ShopifyResponse<T> {
+  data?: T;
+  errors?: ShopifyError[];
 }
-
-// =========================================================
-// CONFIGURACIÓN SHOPIFY
-// =========================================================
-
-const SHOPIFY_API_VERSION = "2026-07";
-
-const SHOPIFY_ENDPOINT =
-  `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-
-// =========================================================
-// SHOPIFY FETCH
-// =========================================================
 
 export async function shopifyFetch<T>(
   query: string,
   variables: Record<string, unknown> = {}
 ): Promise<T> {
-  // Creamos los headers explícitamente.
-  // El ! indica a TypeScript que ya hemos comprobado
-  // anteriormente que el token existe.
+
   const headers = new Headers();
 
   headers.set(
@@ -51,15 +44,11 @@ export async function shopifyFetch<T>(
 
   headers.set(
     "X-Shopify-Storefront-Access-Token",
-    SHOPIFY_STOREFRONT_PUBLIC_TOKEN!
+    token
   );
 
-  // =======================================================
-  // PETICIÓN
-  // =======================================================
-
   const response = await fetch(
-    SHOPIFY_ENDPOINT,
+    endpoint,
     {
       method: "POST",
       headers,
@@ -71,49 +60,33 @@ export async function shopifyFetch<T>(
     }
   );
 
-  // =======================================================
-  // ERROR HTTP
-  // =======================================================
-
   if (!response.ok) {
-    const errorText =
-      await response.text();
-
     throw new Error(
-      `Shopify API error ${response.status}: ${errorText}`
+      `Shopify respondió HTTP ${response.status}`
     );
   }
 
-  // =======================================================
-  // RESPUESTA
-  // =======================================================
+  const json =
+    (await response.json()) as ShopifyResponse<T>;
 
-  const json = (await response.json()) as {
-    data?: T;
-    errors?: {
-      message: string;
-    }[];
-  };
-
-  // =======================================================
-  // ERROR GRAPHQL
-  // =======================================================
-
-  if (json.errors && json.errors.length > 0) {
-    throw new Error(
+  if (
+    json.errors &&
+    json.errors.length > 0
+  ) {
+    console.error(
+      "Errores GraphQL de Shopify:",
       json.errors
-        .map((error) => error.message)
-        .join(", ")
+    );
+
+    throw new Error(
+      json.errors[0]?.message ||
+        "Error al consultar Shopify"
     );
   }
 
-  // =======================================================
-  // SIN DATOS
-  // =======================================================
-
-  if (!json.data) {
+  if (json.data === undefined) {
     throw new Error(
-      "Shopify no devolvió datos."
+      "Shopify no devolvió datos"
     );
   }
 

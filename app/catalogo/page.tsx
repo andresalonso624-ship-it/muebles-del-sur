@@ -959,6 +959,12 @@ export default async function CatalogoPage({
                   null
                 }
 
+                imagenes={
+                  producto.images?.map(
+                    (image) => image.url
+                  ) ?? []
+                }
+
                 precio={
                   producto.priceRange
                     .minVariantPrice.amount

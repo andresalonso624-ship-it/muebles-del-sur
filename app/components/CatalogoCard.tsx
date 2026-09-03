@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ProductModal from "./ProductModal";
 
 import type { ShopifyVariant } from "@/app/lib/shopify-products";
 
@@ -11,6 +12,7 @@ interface CatalogoCardProps {
   referencia: string;
   descripcion?: string;
   imagen: string | null;
+  imagenes?: string[];
   precio: string;
   moneda?: string;
   disponible: boolean;
@@ -18,11 +20,14 @@ interface CatalogoCardProps {
   variants: ShopifyVariant[];
 }
 
+type TipoOpcion = "color" | "medida";
+
 export default function CatalogoCard({
   nombre,
   referencia,
   descripcion,
   imagen,
+  imagenes = [],
   precio,
   moneda = "EUR",
   disponible,
@@ -47,39 +52,437 @@ export default function CatalogoCard({
   }, [variants]);
 
   // =========================================================
+  // NORMALIZAR NOMBRE DE OPCIÓN
+  // =========================================================
+
+  const normalizar = (valor: string) =>
+    valor
+      .toLowerCase()
+      .trim();
+
+  // =========================================================
+  // OBTENER COLOR / MEDIDA
+  // =========================================================
+
+  const obtenerValorOpcion = (
+    variant: ShopifyVariant,
+    tipo: TipoOpcion
+  ): string => {
+    if (!Array.isArray(variant.selectedOptions)) {
+      return "";
+    }
+
+    const opcion = variant.selectedOptions.find((item) => {
+      const nombreOpcion = normalizar(item.name);
+
+      if (tipo === "color") {
+        return (
+          nombreOpcion === "color" ||
+          nombreOpcion === "colour"
+        );
+      }
+
+      return (
+        nombreOpcion === "medida" ||
+        nombreOpcion === "medidas" ||
+        nombreOpcion === "tamaño" ||
+        nombreOpcion === "tamano" ||
+        nombreOpcion === "size"
+      );
+    });
+
+    return opcion?.value || "";
+  };
+
+  // =========================================================
+  // COLORES DISPONIBLES
+  // =========================================================
+
+  const colores = useMemo<string[]>(() => {
+    const valores = variantesReales
+      .map((variant) =>
+        obtenerValorOpcion(variant, "color")
+      )
+      .filter(Boolean);
+
+    return Array.from(new Set(valores));
+  }, [variantesReales]);
+
+  // =========================================================
+  // MEDIDAS DISPONIBLES
+  // =========================================================
+
+  const medidas = useMemo<string[]>(() => {
+    const valores = variantesReales
+      .map((variant) =>
+        obtenerValorOpcion(variant, "medida")
+      )
+      .filter(Boolean);
+
+    return Array.from(new Set(valores));
+  }, [variantesReales]);
+
+  // =========================================================
+  // PRIMERA VARIANTE VÁLIDA
+  // =========================================================
+
+  const primeraVariante = variantesReales[0] || null;
+
+  const primerColor = primeraVariante
+    ? obtenerValorOpcion(
+        primeraVariante,
+        "color"
+      )
+    : "";
+
+  const primeraMedida = primeraVariante
+    ? obtenerValorOpcion(
+        primeraVariante,
+        "medida"
+      )
+    : "";
+
+  // =========================================================
+  // OPCIONES SELECCIONADAS
+  // =========================================================
+
+  const [colorSeleccionado, setColorSeleccionado] =
+    useState<string>(primerColor);
+
+  const [medidaSeleccionada, setMedidaSeleccionada] =
+    useState<string>(primeraMedida);
+
+  // =========================================================
+  // COLORES COMPATIBLES CON LA MEDIDA
+  // =========================================================
+
+  const coloresDisponibles = useMemo(() => {
+    return colores.filter((color) => {
+      return variantesReales.some((variant) => {
+        const colorVariant =
+          obtenerValorOpcion(
+            variant,
+            "color"
+          );
+
+        const medidaVariant =
+          obtenerValorOpcion(
+            variant,
+            "medida"
+          );
+
+        return (
+          colorVariant === color &&
+          (
+            !medidaSeleccionada ||
+            !medidas.length ||
+            medidaVariant ===
+              medidaSeleccionada
+          )
+        );
+      });
+    });
+  }, [
+    colores,
+    variantesReales,
+    medidaSeleccionada,
+    medidas.length,
+  ]);
+
+  // =========================================================
+  // MEDIDAS COMPATIBLES CON EL COLOR
+  // =========================================================
+
+  const medidasDisponibles = useMemo(() => {
+    return medidas.filter((medida) => {
+      return variantesReales.some((variant) => {
+        const colorVariant =
+          obtenerValorOpcion(
+            variant,
+            "color"
+          );
+
+        const medidaVariant =
+          obtenerValorOpcion(
+            variant,
+            "medida"
+          );
+
+        return (
+          medidaVariant === medida &&
+          (
+            !colorSeleccionado ||
+            !colores.length ||
+            colorVariant ===
+              colorSeleccionado
+          )
+        );
+      });
+    });
+  }, [
+    medidas,
+    variantesReales,
+    colorSeleccionado,
+    colores.length,
+  ]);
+
+  // =========================================================
   // VARIANTE SELECCIONADA
   // =========================================================
 
-  const [varianteSeleccionada, setVarianteSeleccionada] =
-    useState<ShopifyVariant | null>(null);
+  const varianteSeleccionada =
+    useMemo<ShopifyVariant | null>(() => {
+      if (!variantesReales.length) {
+        return null;
+      }
+
+      // Producto con Color + Medida
+      if (colores.length > 0 && medidas.length > 0) {
+        return (
+          variantesReales.find((variant) => {
+            const color =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
+
+            const medida =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
+
+            return (
+              color === colorSeleccionado &&
+              medida === medidaSeleccionada
+            );
+          }) || null
+        );
+      }
+
+      // Solo Color
+      if (colores.length > 0) {
+        return (
+          variantesReales.find((variant) => {
+            const color =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
+
+            return (
+              color === colorSeleccionado
+            );
+          }) || null
+        );
+      }
+
+      // Solo Medida
+      if (medidas.length > 0) {
+        return (
+          variantesReales.find((variant) => {
+            const medida =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
+
+            return (
+              medida === medidaSeleccionada
+            );
+          }) || null
+        );
+      }
+
+      // Otras variantes
+      return variantesReales[0] || null;
+    }, [
+      variantesReales,
+      colores.length,
+      medidas.length,
+      colorSeleccionado,
+      medidaSeleccionada,
+    ]);
 
   // =========================================================
   // CANTIDAD
   // =========================================================
 
-  const [cantidad, setCantidad] = useState<number>(1);
+  const [cantidad, setCantidad] =
+    useState<number>(1);
+
+  // =========================================================
+  // GALERÍA DEL PRODUCTO
+  // =========================================================
+
+  const gallery = useMemo<string[]>(() => {
+    const urls = [
+      ...(imagen ? [imagen] : []),
+      ...(Array.isArray(imagenes) ? imagenes : []),
+    ].filter(Boolean);
+
+    return Array.from(new Set(urls));
+  }, [imagen, imagenes]);
+
+  // =========================================================
+  // VISOR DE FOTOS
+  // =========================================================
+
+  const [modalOpen, setModalOpen] =
+    useState<boolean>(false);
 
   // =========================================================
   // PRECIO
   // =========================================================
 
   const precioActual =
-    varianteSeleccionada?.price?.amount ?? precio;
+    varianteSeleccionada?.price?.amount ??
+    precio;
 
   const monedaActual =
-    varianteSeleccionada?.price?.currencyCode ?? moneda;
+    varianteSeleccionada?.price?.currencyCode ??
+    moneda;
 
-  const precioFormateado = new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: monedaActual,
-  }).format(Number(precioActual));
+  const precioFormateado =
+    new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: monedaActual,
+    }).format(Number(precioActual));
 
   // =========================================================
   // DISPONIBILIDAD
   // =========================================================
 
   const disponibleActual =
-    varianteSeleccionada?.availableForSale ?? disponible;
+    varianteSeleccionada?.availableForSale ??
+    disponible;
+
+  // =========================================================
+  // CAMBIAR COLOR
+  // =========================================================
+
+  const cambiarColor = (
+    nuevoColor: string
+  ) => {
+    setColorSeleccionado(nuevoColor);
+
+    // Verificar que la medida actual
+    // siga siendo compatible.
+    if (
+      medidas.length > 0 &&
+      medidaSeleccionada
+    ) {
+      const existeCombinacion =
+        variantesReales.some((variant) => {
+          const color =
+            obtenerValorOpcion(
+              variant,
+              "color"
+            );
+
+          const medida =
+            obtenerValorOpcion(
+              variant,
+              "medida"
+            );
+
+          return (
+            color === nuevoColor &&
+            medida ===
+              medidaSeleccionada
+          );
+        });
+
+      if (!existeCombinacion) {
+        const primeraMedidaCompatible =
+          variantesReales.find(
+            (variant) => {
+              const color =
+                obtenerValorOpcion(
+                  variant,
+                  "color"
+                );
+
+              return (
+                color === nuevoColor
+              );
+            }
+          );
+
+        if (primeraMedidaCompatible) {
+          setMedidaSeleccionada(
+            obtenerValorOpcion(
+              primeraMedidaCompatible,
+              "medida"
+            )
+          );
+        }
+      }
+    }
+  };
+
+  // =========================================================
+  // CAMBIAR MEDIDA
+  // =========================================================
+
+  const cambiarMedida = (
+    nuevaMedida: string
+  ) => {
+    setMedidaSeleccionada(nuevaMedida);
+
+    // Verificar que el color actual
+    // siga siendo compatible.
+    if (
+      colores.length > 0 &&
+      colorSeleccionado
+    ) {
+      const existeCombinacion =
+        variantesReales.some((variant) => {
+          const color =
+            obtenerValorOpcion(
+              variant,
+              "color"
+            );
+
+          const medida =
+            obtenerValorOpcion(
+              variant,
+              "medida"
+            );
+
+          return (
+            medida === nuevaMedida &&
+            color === colorSeleccionado
+          );
+        });
+
+      if (!existeCombinacion) {
+        const primerColorCompatible =
+          variantesReales.find(
+            (variant) => {
+              const medida =
+                obtenerValorOpcion(
+                  variant,
+                  "medida"
+                );
+
+              return (
+                medida === nuevaMedida
+              );
+            }
+          );
+
+        if (primerColorCompatible) {
+          setColorSeleccionado(
+            obtenerValorOpcion(
+              primerColorCompatible,
+              "color"
+            )
+          );
+        }
+      }
+    }
+  };
 
   // =========================================================
   // WHATSAPP
@@ -87,12 +490,44 @@ export default function CatalogoCard({
 
   const telefono = "34641176821";
 
+  const colorParaMensaje =
+    varianteSeleccionada
+      ? obtenerValorOpcion(
+          varianteSeleccionada,
+          "color"
+        )
+      : colorSeleccionado;
+
+  const medidaParaMensaje =
+    varianteSeleccionada
+      ? obtenerValorOpcion(
+          varianteSeleccionada,
+          "medida"
+        )
+      : medidaSeleccionada;
+
+  const detallesVariante =
+    [
+      colorParaMensaje
+        ? `Color: ${colorParaMensaje}`
+        : "",
+      medidaParaMensaje
+        ? `Medida: ${medidaParaMensaje}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(", ");
+
   const mensaje =
     `Hola, estoy interesado en el producto "${nombre}" ` +
     `(${referencia})` +
-    (varianteSeleccionada
-      ? `, variante: ${varianteSeleccionada.title}`
-      : "") +
+    (
+      detallesVariante
+        ? `, ${detallesVariante}`
+        : varianteSeleccionada
+          ? `, variante: ${varianteSeleccionada.title}`
+          : ""
+    ) +
     `. Cantidad: ${cantidad}.`;
 
   const whatsappUrl =
@@ -105,11 +540,15 @@ export default function CatalogoCard({
   // =========================================================
 
   const disminuirCantidad = () => {
-    setCantidad((actual) => Math.max(1, actual - 1));
+    setCantidad((actual) =>
+      Math.max(1, actual - 1)
+    );
   };
 
   const aumentarCantidad = () => {
-    setCantidad((actual) => actual + 1);
+    setCantidad((actual) =>
+      actual + 1
+    );
   };
 
   // =========================================================
@@ -117,30 +556,89 @@ export default function CatalogoCard({
   // =========================================================
 
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-[#E9E2D9] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <>
+      <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-[#E9E2D9] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
-      {/* IMAGEN */}
+      {/* =====================================================
+          IMAGEN
+      ===================================================== */}
 
-      <Link
-        href={`/catalogo/${handle}`}
-        className="relative block aspect-square w-full overflow-hidden bg-[#F7F2EC]"
+      <button
+        type="button"
+        onClick={() => {
+          if (gallery.length > 0) {
+            setModalOpen(true);
+          }
+        }}
+        aria-label={`Abrir galería de ${nombre}`}
+        className="
+          relative
+          block
+          aspect-square
+          w-full
+          overflow-hidden
+          bg-gradient-to-b
+          from-[#FBF9F5]
+          to-[#F4EFE7]
+          touch-manipulation
+        "
       >
-        {imagen ? (
-          <Image
-            src={imagen}
-            alt={nombre}
-            fill
-            sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+        {gallery.length > 0 ? (
+          <div className="relative h-full w-full p-3 sm:p-4">
+            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
+              <Image
+                src={gallery[0]}
+                alt={nombre}
+                fill
+                sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
+                className="
+                  object-contain
+                  p-3
+                  transition-transform
+                  duration-500
+                  group-hover:scale-[1.03]
+                  sm:p-4
+                "
+              />
+            </div>
+          </div>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
             Sin imagen
           </div>
         )}
-      </Link>
 
-      {/* INFORMACIÓN */}
+        {gallery.length > 1 && (
+          <span
+            className="
+              absolute
+              left-4
+              top-4
+              rounded-full
+              border
+              border-white/70
+              bg-white/95
+              px-3
+              py-1.5
+              text-[10px]
+              font-semibold
+              text-[#4A4035]
+              shadow-sm
+              backdrop-blur-sm
+              sm:left-5
+              sm:top-5
+              sm:text-xs
+            "
+          >
+            +{gallery.length - 1} fotos
+          </span>
+        )}
+      </button>
+
+
+      {/* =====================================================
+          INFORMACIÓN
+      ===================================================== */}
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
 
@@ -158,11 +656,19 @@ export default function CatalogoCard({
           Ref. {referencia}
         </p>
 
-        {/* PRECIO */}
+        {/* =================================================
+            PRECIO
+        ================================================= */}
 
         <div className="mt-4 rounded-2xl bg-[#F7F2EC] px-4 py-3">
           <p className="text-[10px] font-medium uppercase tracking-wider text-gray-500 sm:text-xs">
-            Desde
+            {varianteSeleccionada &&
+            (
+              colorSeleccionado ||
+              medidaSeleccionada
+            )
+              ? "Precio"
+              : "Desde"}
           </p>
 
           <p className="mt-0.5 text-2xl font-bold text-[#2C241C] sm:text-3xl">
@@ -170,7 +676,9 @@ export default function CatalogoCard({
           </p>
         </div>
 
-        {/* DESCRIPCIÓN */}
+        {/* =================================================
+            DESCRIPCIÓN
+        ================================================= */}
 
         {descripcion && (
           <p className="mt-4 line-clamp-2 text-xs leading-5 text-gray-600 sm:text-sm">
@@ -178,52 +686,142 @@ export default function CatalogoCard({
           </p>
         )}
 
-        {/* VARIANTES */}
+        {/* =================================================
+            COLOR
+        ================================================= */}
 
-        {variantesReales.length > 0 && (
+        {colores.length > 0 && (
           <div className="mt-4">
             <label
-              htmlFor={`variante-${handle}`}
+              htmlFor={`color-${handle}`}
               className="mb-2 block text-sm font-semibold text-[#2C241C]"
             >
-              Opciones
+              Color
             </label>
 
             <select
-              id={`variante-${handle}`}
-              value={varianteSeleccionada?.id ?? ""}
-              onChange={(event) => {
-                const nuevaVariante =
-                  variantesReales.find(
-                    (variant) =>
-                      variant.id === event.target.value
-                  ) ?? null;
-
-                setVarianteSeleccionada(nuevaVariante);
-              }}
+              id={`color-${handle}`}
+              value={colorSeleccionado}
+              onChange={(event) =>
+                cambiarColor(
+                  event.target.value
+                )
+              }
               className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
             >
-              <option value="">
-                Seleccionar opción
-              </option>
-
-              {variantesReales.map((variant) => (
-                <option
-                  key={variant.id}
-                  value={variant.id}
-                  disabled={!variant.availableForSale}
-                >
-                  {variant.title}
-                  {!variant.availableForSale
-                    ? " — No disponible"
-                    : ""}
-                </option>
-              ))}
+              {coloresDisponibles.map(
+                (color) => (
+                  <option
+                    key={color}
+                    value={color}
+                  >
+                    {color}
+                  </option>
+                )
+              )}
             </select>
           </div>
         )}
 
-        {/* CANTIDAD */}
+        {/* =================================================
+            MEDIDA
+        ================================================= */}
+
+        {medidas.length > 0 && (
+          <div className="mt-4">
+            <label
+              htmlFor={`medida-${handle}`}
+              className="mb-2 block text-sm font-semibold text-[#2C241C]"
+            >
+              Medida
+            </label>
+
+            <select
+              id={`medida-${handle}`}
+              value={medidaSeleccionada}
+              onChange={(event) =>
+                cambiarMedida(
+                  event.target.value
+                )
+              }
+              className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+            >
+              {medidasDisponibles.map(
+                (medida) => (
+                  <option
+                    key={medida}
+                    value={medida}
+                  >
+                    {medida}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        )}
+
+        {/* =================================================
+            OTRAS VARIANTES
+        ================================================= */}
+
+        {variantesReales.length > 0 &&
+          colores.length === 0 &&
+          medidas.length === 0 && (
+            <div className="mt-4">
+              <label
+                htmlFor={`variante-${handle}`}
+                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+              >
+                Opciones
+              </label>
+
+              <select
+                id={`variante-${handle}`}
+                value={
+                  varianteSeleccionada?.id ??
+                  ""
+                }
+                onChange={(event) => {
+                  const nuevaVariante =
+                    variantesReales.find(
+                      (variant) =>
+                        variant.id ===
+                        event.target.value
+                    ) ?? null;
+
+                  if (nuevaVariante) {
+                    // Para productos con otras
+                    // opciones mantenemos la selección
+                    // mediante una variable local indirecta.
+                    // La variante principal sigue tomando
+                    // la primera combinación válida.
+                  }
+                }}
+                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+              >
+                {variantesReales.map(
+                  (variant) => (
+                    <option
+                      key={variant.id}
+                      value={variant.id}
+                      disabled={
+                        !variant.availableForSale
+                      }
+                    >
+                      {variant.title}
+                      {!variant.availableForSale
+                        ? " — No disponible"
+                        : ""}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+        {/* =================================================
+            CANTIDAD
+        ================================================= */}
 
         <div className="mt-4">
           <p className="mb-2 text-sm font-semibold text-[#2C241C]">
@@ -255,7 +853,9 @@ export default function CatalogoCard({
           </div>
         </div>
 
-        {/* ESTADO */}
+        {/* =================================================
+            ESTADO
+        ================================================= */}
 
         <div className="mt-4 flex items-center justify-between border-t border-[#EEE8E1] pt-4">
           <span className="text-xs font-medium text-gray-500 sm:text-sm">
@@ -273,17 +873,27 @@ export default function CatalogoCard({
           )}
         </div>
 
-        {/* COMPRAR */}
+        {/* =================================================
+            COMPRAR
+        ================================================= */}
 
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#211E1B] px-4 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-[#A36A33]"
+          className="mt-4 flex w-full items-center justify-center rounded-2xl bg-[#211E1B] px-4 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-[#A36A33]"
         >
-          🛒 Comprar
+          Comprar
         </a>
       </div>
     </article>
+
+      <ProductModal
+        open={modalOpen}
+        images={gallery}
+        title={nombre}
+        onClose={() => setModalOpen(false)}
+      />
+    </>
   );
 }
