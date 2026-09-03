@@ -1,9 +1,5 @@
 import { shopifyFetch } from "./shopify";
 
-// =========================================================
-// VARIANTE
-// =========================================================
-
 export interface ShopifyVariant {
   id: string;
   title: string;
@@ -25,28 +21,16 @@ export interface ShopifyVariant {
   }[];
 }
 
-// =========================================================
-// IMAGEN
-// =========================================================
-
 export interface ShopifyImage {
   url: string;
   altText: string | null;
 }
-
-// =========================================================
-// COLECCIÓN
-// =========================================================
 
 export interface ShopifyCollection {
   id: string;
   title: string;
   handle: string;
 }
-
-// =========================================================
-// PRODUCTO
-// =========================================================
 
 export interface ShopifyProduct {
   id: string;
@@ -71,46 +55,40 @@ export interface ShopifyProduct {
   collections: ShopifyCollection[];
 }
 
-// =========================================================
-// PRODUCTO DEVUELTO POR SHOPIFY
-// =========================================================
-
-interface ShopifyProductNode {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  availableForSale: boolean;
-
-  featuredImage: ShopifyImage | null;
-
-  images: {
-    nodes: ShopifyImage[];
-  };
-
-  priceRange: {
-    minVariantPrice: {
-      amount: string;
-      currencyCode: string;
-    };
-  };
-
-  variants: {
-    nodes: ShopifyVariant[];
-  };
-
-  collections: {
-    nodes: ShopifyCollection[];
-  };
-}
-
-// =========================================================
-// RESPUESTA DE SHOPIFY
-// =========================================================
+/* =========================================================
+   RESPUESTA DE PRODUCTOS
+========================================================= */
 
 interface ProductsResponse {
   products: {
-    nodes: ShopifyProductNode[];
+    nodes: {
+      id: string;
+      title: string;
+      handle: string;
+      description: string;
+      availableForSale: boolean;
+
+      featuredImage: ShopifyImage | null;
+
+      images: {
+        nodes: ShopifyImage[];
+      };
+
+      priceRange: {
+        minVariantPrice: {
+          amount: string;
+          currencyCode: string;
+        };
+      };
+
+      variants: {
+        nodes: ShopifyVariant[];
+      };
+
+      collections: {
+        nodes: ShopifyCollection[];
+      };
+    }[];
 
     pageInfo: {
       hasNextPage: boolean;
@@ -119,9 +97,9 @@ interface ProductsResponse {
   };
 }
 
-// =========================================================
-// QUERY SHOPIFY
-// =========================================================
+/* =========================================================
+   CONSULTA PRODUCTOS
+========================================================= */
 
 const PRODUCTS_QUERY = `
   query GetProducts($after: String) {
@@ -195,9 +173,9 @@ const PRODUCTS_QUERY = `
   }
 `;
 
-// =========================================================
-// OBTENER TODOS LOS PRODUCTOS
-// =========================================================
+/* =========================================================
+   OBTENER TODOS LOS PRODUCTOS
+========================================================= */
 
 export async function getShopifyProducts(): Promise<
   ShopifyProduct[]
@@ -207,28 +185,23 @@ export async function getShopifyProducts(): Promise<
   let after: string | null = null;
 
   while (true) {
-    // IMPORTANTE:
-    // El tipo explícito de data evita el error TS7022.
     const data: ProductsResponse =
       await shopifyFetch<ProductsResponse>(
         PRODUCTS_QUERY,
-        {
-          after,
-        }
+        { after }
       );
 
-    const productos: ShopifyProduct[] =
+    const productos =
       data.products.nodes.map(
-        (
-          producto: ShopifyProductNode
-        ): ShopifyProduct => ({
+        (producto): ShopifyProduct => ({
           id: producto.id,
 
           title: producto.title,
 
           handle: producto.handle,
 
-          description: producto.description,
+          description:
+            producto.description ?? "",
 
           availableForSale:
             producto.availableForSale,
@@ -236,14 +209,12 @@ export async function getShopifyProducts(): Promise<
           featuredImage:
             producto.featuredImage,
 
-          // Todas las fotos del producto
           images:
             producto.images?.nodes ?? [],
 
           priceRange:
             producto.priceRange,
 
-          // Todas las variantes
           variants:
             producto.variants?.nodes ?? [],
 
@@ -252,11 +223,8 @@ export async function getShopifyProducts(): Promise<
         })
       );
 
-    todosLosProductos.push(
-      ...productos
-    );
+    todosLosProductos.push(...productos);
 
-    // Si no hay más páginas, terminamos
     if (
       !data.products.pageInfo.hasNextPage
     ) {
@@ -266,11 +234,89 @@ export async function getShopifyProducts(): Promise<
     after =
       data.products.pageInfo.endCursor;
 
-    // Seguridad adicional
     if (!after) {
       break;
     }
   }
 
   return todosLosProductos;
+}
+
+/* =========================================================
+   RESPUESTA DE CATEGORÍAS
+========================================================= */
+
+interface CollectionsResponse {
+  collections: {
+    nodes: ShopifyCollection[];
+
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string | null;
+    };
+  };
+}
+
+/* =========================================================
+   CONSULTA CATEGORÍAS SHOPIFY
+========================================================= */
+
+const COLLECTIONS_QUERY = `
+  query GetCollections($after: String) {
+    collections(
+      first: 250
+      after: $after
+    ) {
+      nodes {
+        id
+        title
+        handle
+      }
+
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+/* =========================================================
+   OBTENER TODAS LAS CATEGORÍAS
+========================================================= */
+
+export async function getShopifyCollections(): Promise<
+  ShopifyCollection[]
+> {
+  const todasLasColecciones: ShopifyCollection[] =
+    [];
+
+  let after: string | null = null;
+
+  while (true) {
+    const data: CollectionsResponse =
+      await shopifyFetch<CollectionsResponse>(
+        COLLECTIONS_QUERY,
+        { after }
+      );
+
+    todasLasColecciones.push(
+      ...data.collections.nodes
+    );
+
+    if (
+      !data.collections.pageInfo.hasNextPage
+    ) {
+      break;
+    }
+
+    after =
+      data.collections.pageInfo.endCursor;
+
+    if (!after) {
+      break;
+    }
+  }
+
+  return todasLasColecciones;
 }

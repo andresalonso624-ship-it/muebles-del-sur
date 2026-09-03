@@ -2,9 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import ProductModal from "./ProductModal";
 
+import ProductModal from "./ProductModal";
 import type { ShopifyVariant } from "@/app/lib/shopify-products";
 
 interface CatalogoCardProps {
@@ -56,9 +55,7 @@ export default function CatalogoCard({
   // =========================================================
 
   const normalizar = (valor: string) =>
-    valor
-      .toLowerCase()
-      .trim();
+    valor.toLowerCase().trim();
 
   // =========================================================
   // OBTENER COLOR / MEDIDA
@@ -126,7 +123,8 @@ export default function CatalogoCard({
   // PRIMERA VARIANTE VÁLIDA
   // =========================================================
 
-  const primeraVariante = variantesReales[0] || null;
+  const primeraVariante =
+    variantesReales[0] || null;
 
   const primerColor = primeraVariante
     ? obtenerValorOpcion(
@@ -146,85 +144,91 @@ export default function CatalogoCard({
   // OPCIONES SELECCIONADAS
   // =========================================================
 
-  const [colorSeleccionado, setColorSeleccionado] =
-    useState<string>(primerColor);
+  const [
+    colorSeleccionado,
+    setColorSeleccionado,
+  ] = useState<string>(primerColor);
 
-  const [medidaSeleccionada, setMedidaSeleccionada] =
-    useState<string>(primeraMedida);
+  const [
+    medidaSeleccionada,
+    setMedidaSeleccionada,
+  ] = useState<string>(primeraMedida);
 
   // =========================================================
   // COLORES COMPATIBLES CON LA MEDIDA
   // =========================================================
 
-  const coloresDisponibles = useMemo(() => {
-    return colores.filter((color) => {
-      return variantesReales.some((variant) => {
-        const colorVariant =
-          obtenerValorOpcion(
-            variant,
-            "color"
-          );
+  const coloresDisponibles =
+    useMemo(() => {
+      return colores.filter((color) => {
+        return variantesReales.some((variant) => {
+          const colorVariant =
+            obtenerValorOpcion(
+              variant,
+              "color"
+            );
 
-        const medidaVariant =
-          obtenerValorOpcion(
-            variant,
-            "medida"
-          );
+          const medidaVariant =
+            obtenerValorOpcion(
+              variant,
+              "medida"
+            );
 
-        return (
-          colorVariant === color &&
-          (
-            !medidaSeleccionada ||
-            !medidas.length ||
-            medidaVariant ===
-              medidaSeleccionada
-          )
-        );
+          return (
+            colorVariant === color &&
+            (
+              !medidaSeleccionada ||
+              !medidas.length ||
+              medidaVariant ===
+                medidaSeleccionada
+            )
+          );
+        });
       });
-    });
-  }, [
-    colores,
-    variantesReales,
-    medidaSeleccionada,
-    medidas.length,
-  ]);
+    }, [
+      colores,
+      variantesReales,
+      medidaSeleccionada,
+      medidas.length,
+    ]);
 
   // =========================================================
   // MEDIDAS COMPATIBLES CON EL COLOR
   // =========================================================
 
-  const medidasDisponibles = useMemo(() => {
-    return medidas.filter((medida) => {
-      return variantesReales.some((variant) => {
-        const colorVariant =
-          obtenerValorOpcion(
-            variant,
-            "color"
-          );
+  const medidasDisponibles =
+    useMemo(() => {
+      return medidas.filter((medida) => {
+        return variantesReales.some((variant) => {
+          const colorVariant =
+            obtenerValorOpcion(
+              variant,
+              "color"
+            );
 
-        const medidaVariant =
-          obtenerValorOpcion(
-            variant,
-            "medida"
-          );
+          const medidaVariant =
+            obtenerValorOpcion(
+              variant,
+              "medida"
+            );
 
-        return (
-          medidaVariant === medida &&
-          (
-            !colorSeleccionado ||
-            !colores.length ||
-            colorVariant ===
-              colorSeleccionado
-          )
-        );
+          return (
+            medidaVariant === medida &&
+            (
+              !colorSeleccionado ||
+              !colores.length ||
+              colorVariant ===
+                colorSeleccionado
+            )
+          );
+        });
       });
-    });
-  }, [
-    medidas,
-    variantesReales,
-    colorSeleccionado,
-    colores.length,
-  ]);
+    }, [
+      medidas,
+      variantesReales,
+      colorSeleccionado,
+      colores.length,
+    ]);
 
   // =========================================================
   // VARIANTE SELECCIONADA
@@ -236,8 +240,10 @@ export default function CatalogoCard({
         return null;
       }
 
-      // Producto con Color + Medida
-      if (colores.length > 0 && medidas.length > 0) {
+      if (
+        colores.length > 0 &&
+        medidas.length > 0
+      ) {
         return (
           variantesReales.find((variant) => {
             const color =
@@ -260,7 +266,6 @@ export default function CatalogoCard({
         );
       }
 
-      // Solo Color
       if (colores.length > 0) {
         return (
           variantesReales.find((variant) => {
@@ -277,7 +282,6 @@ export default function CatalogoCard({
         );
       }
 
-      // Solo Medida
       if (medidas.length > 0) {
         return (
           variantesReales.find((variant) => {
@@ -294,7 +298,6 @@ export default function CatalogoCard({
         );
       }
 
-      // Otras variantes
       return variantesReales[0] || null;
     }, [
       variantesReales,
@@ -312,21 +315,19 @@ export default function CatalogoCard({
     useState<number>(1);
 
   // =========================================================
-  // GALERÍA DEL PRODUCTO
+  // GALERÍA
   // =========================================================
 
   const gallery = useMemo<string[]>(() => {
     const urls = [
       ...(imagen ? [imagen] : []),
-      ...(Array.isArray(imagenes) ? imagenes : []),
+      ...(Array.isArray(imagenes)
+        ? imagenes
+        : []),
     ].filter(Boolean);
 
     return Array.from(new Set(urls));
   }, [imagen, imagenes]);
-
-  // =========================================================
-  // VISOR DE FOTOS
-  // =========================================================
 
   const [modalOpen, setModalOpen] =
     useState<boolean>(false);
@@ -340,8 +341,8 @@ export default function CatalogoCard({
     precio;
 
   const monedaActual =
-    varianteSeleccionada?.price?.currencyCode ??
-    moneda;
+    varianteSeleccionada?.price
+      ?.currencyCode ?? moneda;
 
   const precioFormateado =
     new Intl.NumberFormat("es-ES", {
@@ -354,7 +355,8 @@ export default function CatalogoCard({
   // =========================================================
 
   const disponibleActual =
-    varianteSeleccionada?.availableForSale ??
+    varianteSeleccionada
+      ?.availableForSale ??
     disponible;
 
   // =========================================================
@@ -366,8 +368,6 @@ export default function CatalogoCard({
   ) => {
     setColorSeleccionado(nuevoColor);
 
-    // Verificar que la medida actual
-    // siga siendo compatible.
     if (
       medidas.length > 0 &&
       medidaSeleccionada
@@ -428,10 +428,10 @@ export default function CatalogoCard({
   const cambiarMedida = (
     nuevaMedida: string
   ) => {
-    setMedidaSeleccionada(nuevaMedida);
+    setMedidaSeleccionada(
+      nuevaMedida
+    );
 
-    // Verificar que el color actual
-    // siga siendo compatible.
     if (
       colores.length > 0 &&
       colorSeleccionado
@@ -506,17 +506,16 @@ export default function CatalogoCard({
         )
       : medidaSeleccionada;
 
-  const detallesVariante =
-    [
-      colorParaMensaje
-        ? `Color: ${colorParaMensaje}`
-        : "",
-      medidaParaMensaje
-        ? `Medida: ${medidaParaMensaje}`
-        : "",
-    ]
-      .filter(Boolean)
-      .join(", ");
+  const detallesVariante = [
+    colorParaMensaje
+      ? `Color: ${colorParaMensaje}`
+      : "",
+    medidaParaMensaje
+      ? `Medida: ${medidaParaMensaje}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const mensaje =
     `Hola, estoy interesado en el producto "${nombre}" ` +
@@ -559,212 +558,152 @@ export default function CatalogoCard({
     <>
       <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-[#E9E2D9] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
-      {/* =====================================================
-          IMAGEN
-      ===================================================== */}
+        {/* =====================================================
+            IMAGEN
+        ===================================================== */}
 
-      <button
-        type="button"
-        onClick={() => {
-          if (gallery.length > 0) {
-            setModalOpen(true);
-          }
-        }}
-        aria-label={`Abrir galería de ${nombre}`}
-        className="
-          relative
-          block
-          aspect-square
-          w-full
-          overflow-hidden
-          bg-gradient-to-b
-          from-[#FBF9F5]
-          to-[#F4EFE7]
-          touch-manipulation
-        "
-      >
-        {gallery.length > 0 ? (
-          <div className="relative h-full w-full p-3 sm:p-4">
-            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white">
-              <Image
-                src={gallery[0]}
-                alt={nombre}
-                fill
-                sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
-                className="
-                  object-contain
-                  p-3
-                  transition-transform
-                  duration-500
-                  group-hover:scale-[1.03]
-                  sm:p-4
-                "
-              />
+        <button
+          type="button"
+          onClick={() => {
+            if (gallery.length > 0) {
+              setModalOpen(true);
+            }
+          }}
+          aria-label={`Abrir galería de ${nombre}`}
+          className="relative block aspect-square w-full overflow-hidden bg-[#F7F2EC] touch-manipulation"
+        >
+          {gallery.length > 0 ? (
+            <Image
+              src={gallery[0]}
+              alt={nombre}
+              fill
+              sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+              Sin imagen
             </div>
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            Sin imagen
-          </div>
-        )}
+          )}
 
-        {gallery.length > 1 && (
-          <span
-            className="
-              absolute
-              left-4
-              top-4
-              rounded-full
-              border
-              border-white/70
-              bg-white/95
-              px-3
-              py-1.5
-              text-[10px]
-              font-semibold
-              text-[#4A4035]
-              shadow-sm
-              backdrop-blur-sm
-              sm:left-5
-              sm:top-5
-              sm:text-xs
-            "
-          >
-            +{gallery.length - 1} fotos
-          </span>
-        )}
-      </button>
+          {gallery.length > 1 && (
+            <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-semibold text-[#4A4035] shadow-sm sm:left-5 sm:top-5 sm:text-xs">
+              +{gallery.length - 1} fotos
+            </span>
+          )}
+        </button>
 
+        {/* =====================================================
+            INFORMACIÓN
+        ===================================================== */}
 
-      {/* =====================================================
-          INFORMACIÓN
-      ===================================================== */}
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+          {/* NOMBRE */}
 
-        {/* NOMBRE */}
-
-        <Link href={`/catalogo/${handle}`}>
-          <h2 className="line-clamp-2 text-base font-bold leading-tight text-[#2C241C] transition-colors hover:text-[#A36A33] sm:text-lg">
+          <h2 className="line-clamp-2 text-base font-bold leading-tight text-[#2C241C] sm:text-lg">
             {nombre}
           </h2>
-        </Link>
 
-        {/* REFERENCIA */}
+          {/* PRECIO */}
 
-        <p className="mt-2 line-clamp-1 text-xs text-gray-500 sm:text-sm">
-          Ref. {referencia}
-        </p>
+          <div className="mt-4 rounded-2xl bg-[#F7F2EC] px-4 py-3">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-gray-500 sm:text-xs">
+              {varianteSeleccionada &&
+              (
+                colorSeleccionado ||
+                medidaSeleccionada
+              )
+                ? "Precio"
+                : "Desde"}
+            </p>
 
-        {/* =================================================
-            PRECIO
-        ================================================= */}
-
-        <div className="mt-4 rounded-2xl bg-[#F7F2EC] px-4 py-3">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-gray-500 sm:text-xs">
-            {varianteSeleccionada &&
-            (
-              colorSeleccionado ||
-              medidaSeleccionada
-            )
-              ? "Precio"
-              : "Desde"}
-          </p>
-
-          <p className="mt-0.5 text-2xl font-bold text-[#2C241C] sm:text-3xl">
-            {precioFormateado}
-          </p>
-        </div>
-
-        {/* =================================================
-            DESCRIPCIÓN
-        ================================================= */}
-
-        {descripcion && (
-          <p className="mt-4 line-clamp-2 text-xs leading-5 text-gray-600 sm:text-sm">
-            {descripcion}
-          </p>
-        )}
-
-        {/* =================================================
-            COLOR
-        ================================================= */}
-
-        {colores.length > 0 && (
-          <div className="mt-4">
-            <label
-              htmlFor={`color-${handle}`}
-              className="mb-2 block text-sm font-semibold text-[#2C241C]"
-            >
-              Color
-            </label>
-
-            <select
-              id={`color-${handle}`}
-              value={colorSeleccionado}
-              onChange={(event) =>
-                cambiarColor(
-                  event.target.value
-                )
-              }
-              className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
-            >
-              {coloresDisponibles.map(
-                (color) => (
-                  <option
-                    key={color}
-                    value={color}
-                  >
-                    {color}
-                  </option>
-                )
-              )}
-            </select>
+            <p className="mt-0.5 text-2xl font-bold text-[#2C241C] sm:text-3xl">
+              {precioFormateado}
+            </p>
           </div>
-        )}
 
-        {/* =================================================
-            MEDIDA
-        ================================================= */}
+          {/* DESCRIPCIÓN */}
 
-        {medidas.length > 0 && (
-          <div className="mt-4">
-            <label
-              htmlFor={`medida-${handle}`}
-              className="mb-2 block text-sm font-semibold text-[#2C241C]"
-            >
-              Medida
-            </label>
+          {descripcion && (
+            <p className="mt-4 line-clamp-2 text-xs leading-5 text-gray-600 sm:text-sm">
+              {descripcion}
+            </p>
+          )}
 
-            <select
-              id={`medida-${handle}`}
-              value={medidaSeleccionada}
-              onChange={(event) =>
-                cambiarMedida(
-                  event.target.value
-                )
-              }
-              className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
-            >
-              {medidasDisponibles.map(
-                (medida) => (
-                  <option
-                    key={medida}
-                    value={medida}
-                  >
-                    {medida}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-        )}
+          {/* COLOR */}
 
-        {/* =================================================
-            OTRAS VARIANTES
-        ================================================= */}
+          {colores.length > 0 && (
+            <div className="mt-4">
+              <label
+                htmlFor={`color-${handle}`}
+                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+              >
+                Color
+              </label>
 
-        {variantesReales.length > 0 &&
+              <select
+                id={`color-${handle}`}
+                value={colorSeleccionado}
+                onChange={(event) =>
+                  cambiarColor(
+                    event.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+              >
+                {coloresDisponibles.map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                    >
+                      {color}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+          {/* MEDIDA */}
+
+          {medidas.length > 0 && (
+            <div className="mt-4">
+              <label
+                htmlFor={`medida-${handle}`}
+                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+              >
+                Medida
+              </label>
+
+              <select
+                id={`medida-${handle}`}
+                value={medidaSeleccionada}
+                onChange={(event) =>
+                  cambiarMedida(
+                    event.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+              >
+                {medidasDisponibles.map(
+                  (medida) => (
+                    <option
+                      key={medida}
+                      value={medida}
+                    >
+                      {medida}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+          {/* OTRAS VARIANTES */}
+
+          {variantesReales.length > 0 &&
           colores.length === 0 &&
           medidas.length === 0 && (
             <div className="mt-4">
@@ -781,37 +720,16 @@ export default function CatalogoCard({
                   varianteSeleccionada?.id ??
                   ""
                 }
-                onChange={(event) => {
-                  const nuevaVariante =
-                    variantesReales.find(
-                      (variant) =>
-                        variant.id ===
-                        event.target.value
-                    ) ?? null;
-
-                  if (nuevaVariante) {
-                    // Para productos con otras
-                    // opciones mantenemos la selección
-                    // mediante una variable local indirecta.
-                    // La variante principal sigue tomando
-                    // la primera combinación válida.
-                  }
-                }}
-                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+                disabled
+                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none sm:text-sm"
               >
                 {variantesReales.map(
                   (variant) => (
                     <option
                       key={variant.id}
                       value={variant.id}
-                      disabled={
-                        !variant.availableForSale
-                      }
                     >
                       {variant.title}
-                      {!variant.availableForSale
-                        ? " — No disponible"
-                        : ""}
                     </option>
                   )
                 )}
@@ -819,74 +737,68 @@ export default function CatalogoCard({
             </div>
           )}
 
-        {/* =================================================
-            CANTIDAD
-        ================================================= */}
+          {/* CANTIDAD */}
 
-        <div className="mt-4">
-          <p className="mb-2 text-sm font-semibold text-[#2C241C]">
-            Cantidad
-          </p>
+          <div className="mt-4">
+            <p className="mb-2 text-sm font-semibold text-[#2C241C]">
+              Cantidad
+            </p>
 
-          <div className="flex h-11 w-full max-w-[170px] items-center justify-between rounded-xl border border-[#E4DDD5] bg-white">
-            <button
-              type="button"
-              onClick={disminuirCantidad}
-              className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
-              aria-label="Disminuir cantidad"
-            >
-              −
-            </button>
+            <div className="flex h-11 w-full max-w-[170px] items-center justify-between rounded-xl border border-[#E4DDD5] bg-white">
+              <button
+                type="button"
+                onClick={disminuirCantidad}
+                className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
+                aria-label="Disminuir cantidad"
+              >
+                −
+              </button>
 
-            <span className="text-sm font-semibold text-[#2C241C]">
-              {cantidad}
-            </span>
+              <span className="text-sm font-semibold text-[#2C241C]">
+                {cantidad}
+              </span>
 
-            <button
-              type="button"
-              onClick={aumentarCantidad}
-              className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
-              aria-label="Aumentar cantidad"
-            >
-              +
-            </button>
+              <button
+                type="button"
+                onClick={aumentarCantidad}
+                className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
+                aria-label="Aumentar cantidad"
+              >
+                +
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* =================================================
-            ESTADO
-        ================================================= */}
+          {/* ESTADO */}
 
-        <div className="mt-4 flex items-center justify-between border-t border-[#EEE8E1] pt-4">
-          <span className="text-xs font-medium text-gray-500 sm:text-sm">
-            Estado
-          </span>
-
-          {disponibleActual ? (
-            <span className="rounded-full bg-[#DCF7E8] px-3 py-1 text-xs font-semibold text-[#16834A]">
-              Disponible
+          <div className="mt-4 flex items-center justify-between border-t border-[#EEE8E1] pt-4">
+            <span className="text-xs font-medium text-gray-500 sm:text-sm">
+              Estado
             </span>
-          ) : (
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-              Consultar
-            </span>
-          )}
+
+            {disponibleActual ? (
+              <span className="rounded-full bg-[#DCF7E8] px-3 py-1 text-xs font-semibold text-[#16834A]">
+                Disponible
+              </span>
+            ) : (
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                Consultar
+              </span>
+            )}
+          </div>
+
+          {/* COMPRAR */}
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex w-full items-center justify-center rounded-2xl bg-[#211E1B] px-4 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-[#A36A33]"
+          >
+            Comprar
+          </a>
         </div>
-
-        {/* =================================================
-            COMPRAR
-        ================================================= */}
-
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 flex w-full items-center justify-center rounded-2xl bg-[#211E1B] px-4 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-[#A36A33]"
-        >
-          Comprar
-        </a>
-      </div>
-    </article>
+      </article>
 
       <ProductModal
         open={modalOpen}
