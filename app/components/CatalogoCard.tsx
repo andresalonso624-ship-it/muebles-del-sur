@@ -42,11 +42,20 @@ export default function CatalogoCard({
       return [];
     }
 
+    /*
+      IMPORTANTE:
+      NO eliminamos "Default Title".
+
+      Muchos productos de Shopify tienen una sola variante
+      llamada "Default Title". Esa variante también debe
+      poder agregarse al carrito.
+    */
+
     return variants.filter(
       (variant) =>
         variant &&
-        variant.title &&
-        variant.title !== "Default Title"
+        variant.id &&
+        variant.title
     );
   }, [variants]);
 
@@ -69,24 +78,27 @@ export default function CatalogoCard({
       return "";
     }
 
-    const opcion = variant.selectedOptions.find((item) => {
-      const nombreOpcion = normalizar(item.name);
+    const opcion = variant.selectedOptions.find(
+      (item) => {
+        const nombreOpcion =
+          normalizar(item.name);
 
-      if (tipo === "color") {
+        if (tipo === "color") {
+          return (
+            nombreOpcion === "color" ||
+            nombreOpcion === "colour"
+          );
+        }
+
         return (
-          nombreOpcion === "color" ||
-          nombreOpcion === "colour"
+          nombreOpcion === "medida" ||
+          nombreOpcion === "medidas" ||
+          nombreOpcion === "tamaño" ||
+          nombreOpcion === "tamano" ||
+          nombreOpcion === "size"
         );
       }
-
-      return (
-        nombreOpcion === "medida" ||
-        nombreOpcion === "medidas" ||
-        nombreOpcion === "tamaño" ||
-        nombreOpcion === "tamano" ||
-        nombreOpcion === "size"
-      );
-    });
+    );
 
     return opcion?.value || "";
   };
@@ -98,7 +110,10 @@ export default function CatalogoCard({
   const colores = useMemo<string[]>(() => {
     const valores = variantesReales
       .map((variant) =>
-        obtenerValorOpcion(variant, "color")
+        obtenerValorOpcion(
+          variant,
+          "color"
+        )
       )
       .filter(Boolean);
 
@@ -112,7 +127,10 @@ export default function CatalogoCard({
   const medidas = useMemo<string[]>(() => {
     const valores = variantesReales
       .map((variant) =>
-        obtenerValorOpcion(variant, "medida")
+        obtenerValorOpcion(
+          variant,
+          "medida"
+        )
       )
       .filter(Boolean);
 
@@ -120,25 +138,27 @@ export default function CatalogoCard({
   }, [variantesReales]);
 
   // =========================================================
-  // PRIMERA VARIANTE VÁLIDA
+  // PRIMERA VARIANTE
   // =========================================================
 
   const primeraVariante =
     variantesReales[0] || null;
 
-  const primerColor = primeraVariante
-    ? obtenerValorOpcion(
-        primeraVariante,
-        "color"
-      )
-    : "";
+  const primerColor =
+    primeraVariante
+      ? obtenerValorOpcion(
+          primeraVariante,
+          "color"
+        )
+      : "";
 
-  const primeraMedida = primeraVariante
-    ? obtenerValorOpcion(
-        primeraVariante,
-        "medida"
-      )
-    : "";
+  const primeraMedida =
+    primeraVariante
+      ? obtenerValorOpcion(
+          primeraVariante,
+          "medida"
+        )
+      : "";
 
   // =========================================================
   // OPCIONES SELECCIONADAS
@@ -147,12 +167,16 @@ export default function CatalogoCard({
   const [
     colorSeleccionado,
     setColorSeleccionado,
-  ] = useState<string>(primerColor);
+  ] = useState<string>(
+    primerColor
+  );
 
   const [
     medidaSeleccionada,
     setMedidaSeleccionada,
-  ] = useState<string>(primeraMedida);
+  ] = useState<string>(
+    primeraMedida
+  );
 
   // =========================================================
   // COLORES COMPATIBLES CON LA MEDIDA
@@ -161,29 +185,31 @@ export default function CatalogoCard({
   const coloresDisponibles =
     useMemo(() => {
       return colores.filter((color) => {
-        return variantesReales.some((variant) => {
-          const colorVariant =
-            obtenerValorOpcion(
-              variant,
-              "color"
-            );
+        return variantesReales.some(
+          (variant) => {
+            const colorVariant =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
 
-          const medidaVariant =
-            obtenerValorOpcion(
-              variant,
-              "medida"
-            );
+            const medidaVariant =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
 
-          return (
-            colorVariant === color &&
-            (
-              !medidaSeleccionada ||
-              !medidas.length ||
-              medidaVariant ===
-                medidaSeleccionada
-            )
-          );
-        });
+            return (
+              colorVariant === color &&
+              (
+                !medidaSeleccionada ||
+                !medidas.length ||
+                medidaVariant ===
+                  medidaSeleccionada
+              )
+            );
+          }
+        );
       });
     }, [
       colores,
@@ -199,29 +225,31 @@ export default function CatalogoCard({
   const medidasDisponibles =
     useMemo(() => {
       return medidas.filter((medida) => {
-        return variantesReales.some((variant) => {
-          const colorVariant =
-            obtenerValorOpcion(
-              variant,
-              "color"
-            );
+        return variantesReales.some(
+          (variant) => {
+            const colorVariant =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
 
-          const medidaVariant =
-            obtenerValorOpcion(
-              variant,
-              "medida"
-            );
+            const medidaVariant =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
 
-          return (
-            medidaVariant === medida &&
-            (
-              !colorSeleccionado ||
-              !colores.length ||
-              colorVariant ===
-                colorSeleccionado
-            )
-          );
-        });
+            return (
+              medidaVariant === medida &&
+              (
+                !colorSeleccionado ||
+                !colores.length ||
+                colorVariant ===
+                  colorSeleccionado
+              )
+            );
+          }
+        );
       });
     }, [
       medidas,
@@ -240,63 +268,83 @@ export default function CatalogoCard({
         return null;
       }
 
+      // COLOR + MEDIDA
       if (
         colores.length > 0 &&
         medidas.length > 0
       ) {
         return (
-          variantesReales.find((variant) => {
-            const color =
-              obtenerValorOpcion(
-                variant,
-                "color"
-              );
+          variantesReales.find(
+            (variant) => {
+              const color =
+                obtenerValorOpcion(
+                  variant,
+                  "color"
+                );
 
-            const medida =
-              obtenerValorOpcion(
-                variant,
-                "medida"
-              );
+              const medida =
+                obtenerValorOpcion(
+                  variant,
+                  "medida"
+                );
 
-            return (
-              color === colorSeleccionado &&
-              medida === medidaSeleccionada
-            );
-          }) || null
+              return (
+                color ===
+                  colorSeleccionado &&
+                medida ===
+                  medidaSeleccionada
+              );
+            }
+          ) || null
         );
       }
 
+      // SOLO COLOR
       if (colores.length > 0) {
         return (
-          variantesReales.find((variant) => {
-            const color =
-              obtenerValorOpcion(
-                variant,
-                "color"
-              );
+          variantesReales.find(
+            (variant) => {
+              const color =
+                obtenerValorOpcion(
+                  variant,
+                  "color"
+                );
 
-            return (
-              color === colorSeleccionado
-            );
-          }) || null
+              return (
+                color ===
+                colorSeleccionado
+              );
+            }
+          ) || null
         );
       }
 
+      // SOLO MEDIDA
       if (medidas.length > 0) {
         return (
-          variantesReales.find((variant) => {
-            const medida =
-              obtenerValorOpcion(
-                variant,
-                "medida"
-              );
+          variantesReales.find(
+            (variant) => {
+              const medida =
+                obtenerValorOpcion(
+                  variant,
+                  "medida"
+                );
 
-            return (
-              medida === medidaSeleccionada
-            );
-          }) || null
+              return (
+                medida ===
+                medidaSeleccionada
+              );
+            }
+          ) || null
         );
       }
+
+      /*
+        PRODUCTO SIN OPCIONES:
+
+        Aquí entra un producto cuya única variante
+        sea "Default Title".
+      */
 
       return variantesReales[0] || null;
     }, [
@@ -326,7 +374,9 @@ export default function CatalogoCard({
         : []),
     ].filter(Boolean);
 
-    return Array.from(new Set(urls));
+    return Array.from(
+      new Set(urls)
+    );
   }, [imagen, imagenes]);
 
   const [modalOpen, setModalOpen] =
@@ -342,13 +392,19 @@ export default function CatalogoCard({
 
   const monedaActual =
     varianteSeleccionada?.price
-      ?.currencyCode ?? moneda;
+      ?.currencyCode ??
+    moneda;
 
   const precioFormateado =
-    new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: monedaActual,
-    }).format(Number(precioActual));
+    new Intl.NumberFormat(
+      "es-ES",
+      {
+        style: "currency",
+        currency: monedaActual,
+      }
+    ).format(
+      Number(precioActual)
+    );
 
   // =========================================================
   // DISPONIBILIDAD
@@ -356,8 +412,8 @@ export default function CatalogoCard({
 
   const disponibleActual =
     varianteSeleccionada
-      ?.availableForSale ??
-    disponible;
+      ? varianteSeleccionada.availableForSale
+      : disponible;
 
   // =========================================================
   // CAMBIAR COLOR
@@ -366,32 +422,36 @@ export default function CatalogoCard({
   const cambiarColor = (
     nuevoColor: string
   ) => {
-    setColorSeleccionado(nuevoColor);
+    setColorSeleccionado(
+      nuevoColor
+    );
 
     if (
       medidas.length > 0 &&
       medidaSeleccionada
     ) {
       const existeCombinacion =
-        variantesReales.some((variant) => {
-          const color =
-            obtenerValorOpcion(
-              variant,
-              "color"
-            );
+        variantesReales.some(
+          (variant) => {
+            const color =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
 
-          const medida =
-            obtenerValorOpcion(
-              variant,
-              "medida"
-            );
+            const medida =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
 
-          return (
-            color === nuevoColor &&
-            medida ===
-              medidaSeleccionada
-          );
-        });
+            return (
+              color === nuevoColor &&
+              medida ===
+                medidaSeleccionada
+            );
+          }
+        );
 
       if (!existeCombinacion) {
         const primeraMedidaCompatible =
@@ -409,7 +469,9 @@ export default function CatalogoCard({
             }
           );
 
-        if (primeraMedidaCompatible) {
+        if (
+          primeraMedidaCompatible
+        ) {
           setMedidaSeleccionada(
             obtenerValorOpcion(
               primeraMedidaCompatible,
@@ -437,24 +499,27 @@ export default function CatalogoCard({
       colorSeleccionado
     ) {
       const existeCombinacion =
-        variantesReales.some((variant) => {
-          const color =
-            obtenerValorOpcion(
-              variant,
-              "color"
-            );
+        variantesReales.some(
+          (variant) => {
+            const color =
+              obtenerValorOpcion(
+                variant,
+                "color"
+              );
 
-          const medida =
-            obtenerValorOpcion(
-              variant,
-              "medida"
-            );
+            const medida =
+              obtenerValorOpcion(
+                variant,
+                "medida"
+              );
 
-          return (
-            medida === nuevaMedida &&
-            color === colorSeleccionado
-          );
-        });
+            return (
+              medida === nuevaMedida &&
+              color ===
+                colorSeleccionado
+            );
+          }
+        );
 
       if (!existeCombinacion) {
         const primerColorCompatible =
@@ -472,7 +537,9 @@ export default function CatalogoCard({
             }
           );
 
-        if (primerColorCompatible) {
+        if (
+          primerColorCompatible
+        ) {
           setColorSeleccionado(
             obtenerValorOpcion(
               primerColorCompatible,
@@ -485,54 +552,88 @@ export default function CatalogoCard({
   };
 
   // =========================================================
-  // WHATSAPP
+  // AGREGAR AL CARRITO
   // =========================================================
 
-  const telefono = "34641176821";
+  const agregarAlCarrito = async () => {
+    if (!varianteSeleccionada) {
+      alert(
+        "No se encontró una variante válida para este producto."
+      );
+      return;
+    }
 
-  const colorParaMensaje =
-    varianteSeleccionada
-      ? obtenerValorOpcion(
-          varianteSeleccionada,
-          "color"
-        )
-      : colorSeleccionado;
+    if (!disponibleActual) {
+      alert(
+        "Este producto no está disponible actualmente."
+      );
+      return;
+    }
 
-  const medidaParaMensaje =
-    varianteSeleccionada
-      ? obtenerValorOpcion(
-          varianteSeleccionada,
-          "medida"
-        )
-      : medidaSeleccionada;
+    try {
+      const cartId =
+        localStorage.getItem(
+          "shopify-cart-id"
+        );
 
-  const detallesVariante = [
-    colorParaMensaje
-      ? `Color: ${colorParaMensaje}`
-      : "",
-    medidaParaMensaje
-      ? `Medida: ${medidaParaMensaje}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join(", ");
+      const response = await fetch(
+        "/api/cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            cartId,
+            variantId:
+              varianteSeleccionada.id,
+            quantity: cantidad,
+          }),
+        }
+      );
 
-  const mensaje =
-    `Hola, estoy interesado en el producto "${nombre}" ` +
-    `(${referencia})` +
-    (
-      detallesVariante
-        ? `, ${detallesVariante}`
-        : varianteSeleccionada
-          ? `, variante: ${varianteSeleccionada.title}`
-          : ""
-    ) +
-    `. Cantidad: ${cantidad}.`;
+      const data =
+        await response.json();
 
-  const whatsappUrl =
-    `https://wa.me/${telefono}?text=${encodeURIComponent(
-      mensaje
-    )}`;
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "No se pudo agregar el producto."
+        );
+      }
+
+      // Guardar ID del carrito
+      if (data.cartId) {
+        localStorage.setItem(
+          "shopify-cart-id",
+          data.cartId
+        );
+      }
+
+      // Actualizar contador
+      window.dispatchEvent(
+        new Event("cartUpdated")
+      );
+
+      // Abrir carrito automáticamente
+      window.dispatchEvent(
+        new Event("openCart")
+      );
+
+    } catch (error) {
+      console.error(
+        "Error agregando al carrito:",
+        error
+      );
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "No se pudo agregar el producto al carrito."
+      );
+    }
+  };
 
   // =========================================================
   // CANTIDAD
@@ -540,13 +641,17 @@ export default function CatalogoCard({
 
   const disminuirCantidad = () => {
     setCantidad((actual) =>
-      Math.max(1, actual - 1)
+      Math.max(
+        1,
+        actual - 1
+      )
     );
   };
 
   const aumentarCantidad = () => {
-    setCantidad((actual) =>
-      actual + 1
+    setCantidad(
+      (actual) =>
+        actual + 1
     );
   };
 
@@ -556,10 +661,28 @@ export default function CatalogoCard({
 
   return (
     <>
-      <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-[#E9E2D9] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <article
+        className="
+          group
+          flex
+          h-full
+          min-w-0
+          flex-col
+          overflow-hidden
+          rounded-3xl
+          border
+          border-[#E9E2D9]
+          bg-white
+          shadow-sm
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+        "
+      >
 
         {/* =====================================================
-            IMAGEN
+            IMAGEN / GALERÍA
         ===================================================== */}
 
         <button
@@ -570,45 +693,154 @@ export default function CatalogoCard({
             }
           }}
           aria-label={`Abrir galería de ${nombre}`}
-          className="relative block aspect-square w-full overflow-hidden bg-[#F7F2EC] touch-manipulation"
+          className="
+            relative
+            block
+            aspect-square
+            w-full
+            overflow-hidden
+            bg-[#F7F2EC]
+            touch-manipulation
+          "
         >
+
           {gallery.length > 0 ? (
-            <Image
-              src={gallery[0]}
-              alt={nombre}
-              fill
-              sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 25vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            <>
+              {/* PRIMERA IMAGEN */}
+
+              <Image
+                src={gallery[0]}
+                alt={nombre}
+                fill
+                priority={false}
+                sizes="
+                  (max-width: 639px) 50vw,
+                  (max-width: 1023px) 50vw,
+                  25vw
+                "
+                className="
+                  object-cover
+                  transition-opacity
+                  duration-300
+                  group-hover:opacity-0
+                "
+              />
+
+              {/* SEGUNDA IMAGEN AL PASAR EL MOUSE */}
+
+              {gallery.length > 1 && (
+                <Image
+                  src={gallery[1]}
+                  alt={`${nombre} - segunda imagen`}
+                  fill
+                  priority={false}
+                  sizes="
+                    (max-width: 639px) 50vw,
+                    (max-width: 1023px) 50vw,
+                    25vw
+                  "
+                  className="
+                    object-cover
+                    opacity-0
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                />
+              )}
+            </>
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            <div
+              className="
+                flex
+                h-full
+                items-center
+                justify-center
+                text-sm
+                text-gray-500
+              "
+            >
               Sin imagen
             </div>
           )}
 
+          {/* INDICADOR DE FOTOS */}
+
           {gallery.length > 1 && (
-            <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-semibold text-[#4A4035] shadow-sm sm:left-5 sm:top-5 sm:text-xs">
+            <span
+              className="
+                absolute
+                left-4
+                top-4
+                rounded-full
+                bg-white/95
+                px-3
+                py-1.5
+                text-[10px]
+                font-semibold
+                text-[#4A4035]
+                shadow-sm
+                sm:left-5
+                sm:top-5
+                sm:text-xs
+              "
+            >
               +{gallery.length - 1} fotos
             </span>
           )}
+
         </button>
 
         {/* =====================================================
             INFORMACIÓN
         ===================================================== */}
 
-        <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <div
+          className="
+            flex
+            flex-1
+            flex-col
+            p-4
+            sm:p-5
+          "
+        >
 
           {/* NOMBRE */}
 
-          <h2 className="line-clamp-2 text-base font-bold leading-tight text-[#2C241C] sm:text-lg">
+          <h2
+            className="
+              line-clamp-2
+              text-base
+              font-bold
+              leading-tight
+              text-[#2C241C]
+              sm:text-lg
+            "
+          >
             {nombre}
           </h2>
 
           {/* PRECIO */}
 
-          <div className="mt-4 rounded-2xl bg-[#F7F2EC] px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-gray-500 sm:text-xs">
+          <div
+            className="
+              mt-4
+              rounded-2xl
+              bg-[#F7F2EC]
+              px-4
+              py-3
+            "
+          >
+            <p
+              className="
+                text-[10px]
+                font-medium
+                uppercase
+                tracking-wider
+                text-gray-500
+                sm:text-xs
+              "
+            >
               {varianteSeleccionada &&
               (
                 colorSeleccionado ||
@@ -618,7 +850,15 @@ export default function CatalogoCard({
                 : "Desde"}
             </p>
 
-            <p className="mt-0.5 text-2xl font-bold text-[#2C241C] sm:text-3xl">
+            <p
+              className="
+                mt-0.5
+                text-2xl
+                font-bold
+                text-[#2C241C]
+                sm:text-3xl
+              "
+            >
               {precioFormateado}
             </p>
           </div>
@@ -626,18 +866,36 @@ export default function CatalogoCard({
           {/* DESCRIPCIÓN */}
 
           {descripcion && (
-            <p className="mt-4 line-clamp-2 text-xs leading-5 text-gray-600 sm:text-sm">
+            <p
+              className="
+                mt-4
+                line-clamp-2
+                text-xs
+                leading-5
+                text-gray-600
+                sm:text-sm
+              "
+            >
               {descripcion}
             </p>
           )}
 
-          {/* COLOR */}
+          {/* =================================================
+              COLOR
+          ================================================= */}
 
           {colores.length > 0 && (
             <div className="mt-4">
+
               <label
                 htmlFor={`color-${handle}`}
-                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-semibold
+                  text-[#2C241C]
+                "
               >
                 Color
               </label>
@@ -650,7 +908,23 @@ export default function CatalogoCard({
                     event.target.value
                   )
                 }
-                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E4DDD5]
+                  bg-white
+                  px-3
+                  py-3
+                  text-xs
+                  text-[#2C241C]
+                  outline-none
+                  transition
+                  focus:border-[#A36A33]
+                  focus:ring-2
+                  focus:ring-[#A36A33]/20
+                  sm:text-sm
+                "
               >
                 {coloresDisponibles.map(
                   (color) => (
@@ -663,16 +937,26 @@ export default function CatalogoCard({
                   )
                 )}
               </select>
+
             </div>
           )}
 
-          {/* MEDIDA */}
+          {/* =================================================
+              MEDIDA
+          ================================================= */}
 
           {medidas.length > 0 && (
             <div className="mt-4">
+
               <label
                 htmlFor={`medida-${handle}`}
-                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-semibold
+                  text-[#2C241C]
+                "
               >
                 Medida
               </label>
@@ -685,7 +969,23 @@ export default function CatalogoCard({
                     event.target.value
                   )
                 }
-                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none transition focus:border-[#A36A33] focus:ring-2 focus:ring-[#A36A33]/20 sm:text-sm"
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E4DDD5]
+                  bg-white
+                  px-3
+                  py-3
+                  text-xs
+                  text-[#2C241C]
+                  outline-none
+                  transition
+                  focus:border-[#A36A33]
+                  focus:ring-2
+                  focus:ring-[#A36A33]/20
+                  sm:text-sm
+                "
               >
                 {medidasDisponibles.map(
                   (medida) => (
@@ -698,18 +998,28 @@ export default function CatalogoCard({
                   )
                 )}
               </select>
+
             </div>
           )}
 
-          {/* OTRAS VARIANTES */}
+          {/* =================================================
+              OTRAS VARIANTES
+          ================================================= */}
 
-          {variantesReales.length > 0 &&
+          {variantesReales.length > 1 &&
           colores.length === 0 &&
           medidas.length === 0 && (
             <div className="mt-4">
+
               <label
                 htmlFor={`variante-${handle}`}
-                className="mb-2 block text-sm font-semibold text-[#2C241C]"
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-semibold
+                  text-[#2C241C]
+                "
               >
                 Opciones
               </label>
@@ -721,7 +1031,19 @@ export default function CatalogoCard({
                   ""
                 }
                 disabled
-                className="w-full rounded-xl border border-[#E4DDD5] bg-white px-3 py-3 text-xs text-[#2C241C] outline-none sm:text-sm"
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E4DDD5]
+                  bg-white
+                  px-3
+                  py-3
+                  text-xs
+                  text-[#2C241C]
+                  outline-none
+                  sm:text-sm
+                "
               >
                 {variantesReales.map(
                   (variant) => (
@@ -734,77 +1056,212 @@ export default function CatalogoCard({
                   )
                 )}
               </select>
+
             </div>
           )}
 
-          {/* CANTIDAD */}
+          {/* =================================================
+              CANTIDAD
+          ================================================= */}
 
           <div className="mt-4">
-            <p className="mb-2 text-sm font-semibold text-[#2C241C]">
+
+            <p
+              className="
+                mb-2
+                text-sm
+                font-semibold
+                text-[#2C241C]
+              "
+            >
               Cantidad
             </p>
 
-            <div className="flex h-11 w-full max-w-[170px] items-center justify-between rounded-xl border border-[#E4DDD5] bg-white">
+            <div
+              className="
+                flex
+                h-11
+                w-full
+                max-w-[210px]
+                items-center
+                justify-between
+                rounded-xl
+                border
+                border-[#E4DDD5]
+                bg-white
+              "
+            >
+
               <button
                 type="button"
-                onClick={disminuirCantidad}
-                className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
+                onClick={
+                  disminuirCantidad
+                }
+                className="
+                  flex
+                  h-full
+                  w-12
+                  items-center
+                  justify-center
+                  text-lg
+                  font-medium
+                  text-gray-600
+                  transition
+                  hover:text-[#A36A33]
+                "
                 aria-label="Disminuir cantidad"
               >
                 −
               </button>
 
-              <span className="text-sm font-semibold text-[#2C241C]">
+              <span
+                className="
+                  text-sm
+                  font-semibold
+                  text-[#2C241C]
+                "
+              >
                 {cantidad}
               </span>
 
               <button
                 type="button"
-                onClick={aumentarCantidad}
-                className="flex h-full w-12 items-center justify-center text-lg font-medium text-gray-600 transition hover:text-[#A36A33]"
+                onClick={
+                  aumentarCantidad
+                }
+                className="
+                  flex
+                  h-full
+                  w-12
+                  items-center
+                  justify-center
+                  text-lg
+                  font-medium
+                  text-gray-600
+                  transition
+                  hover:text-[#A36A33]
+                "
                 aria-label="Aumentar cantidad"
               >
                 +
               </button>
+
             </div>
           </div>
 
-          {/* ESTADO */}
+          {/* =================================================
+              ESTADO
+          ================================================= */}
 
-          <div className="mt-4 flex items-center justify-between border-t border-[#EEE8E1] pt-4">
-            <span className="text-xs font-medium text-gray-500 sm:text-sm">
+          <div
+            className="
+              mt-4
+              flex
+              items-center
+              justify-between
+              border-t
+              border-[#EEE8E1]
+              pt-4
+            "
+          >
+
+            <span
+              className="
+                text-xs
+                font-medium
+                text-gray-500
+                sm:text-sm
+              "
+            >
               Estado
             </span>
 
             {disponibleActual ? (
-              <span className="rounded-full bg-[#DCF7E8] px-3 py-1 text-xs font-semibold text-[#16834A]">
+              <span
+                className="
+                  rounded-full
+                  bg-[#DCF7E8]
+                  px-3
+                  py-1
+                  text-xs
+                  font-semibold
+                  text-[#16834A]
+                "
+              >
                 Disponible
               </span>
             ) : (
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+              <span
+                className="
+                  rounded-full
+                  bg-gray-100
+                  px-3
+                  py-1
+                  text-xs
+                  font-semibold
+                  text-gray-600
+                "
+              >
                 Consultar
               </span>
             )}
+
           </div>
 
-          {/* COMPRAR */}
+          {/* =================================================
+              CARRITO
+              SOLO AGREGAR AL CARRITO
+          ================================================= */}
 
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex w-full items-center justify-center rounded-2xl bg-[#211E1B] px-4 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-[#A36A33]"
-          >
-            Comprar
-          </a>
+          <div className="mt-4">
+
+            <button
+              type="button"
+              onClick={
+                agregarAlCarrito
+              }
+              disabled={
+                !disponibleActual ||
+                !varianteSeleccionada
+              }
+              className="
+                flex
+                w-full
+                items-center
+                justify-center
+                rounded-2xl
+                bg-[#211E1B]
+                px-4
+                py-3.5
+                text-sm
+                font-bold
+                text-white
+                transition-all
+                duration-300
+                hover:bg-[#A36A33]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              Agregar al carrito
+            </button>
+
+          </div>
+
         </div>
       </article>
+
+      {/* =====================================================
+          MODAL DE IMÁGENES
+      ===================================================== */}
 
       <ProductModal
         open={modalOpen}
         images={gallery}
         title={nombre}
-        onClose={() => setModalOpen(false)}
+        onClose={() =>
+          setModalOpen(false)
+        }
       />
     </>
   );

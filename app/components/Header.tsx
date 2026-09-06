@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import CartDrawer from "./CartDrawer";
 
 export default function Header() {
   const [scroll, setScroll] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [carritoAbierto, setCarritoAbierto] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -18,6 +20,24 @@ export default function Header() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const abrirCarrito = () => {
+      setCarritoAbierto(true);
+    };
+
+    window.addEventListener(
+      "openCart",
+      abrirCarrito
+    );
+
+    return () => {
+      window.removeEventListener(
+        "openCart",
+        abrirCarrito
+      );
     };
   }, []);
 
@@ -56,7 +76,6 @@ export default function Header() {
           }
         `}
       >
-
         {/* =================================================
             CONTENEDOR PRINCIPAL
         ================================================= */}
@@ -75,7 +94,6 @@ export default function Header() {
             lg:px-10
           "
         >
-
           {/* =================================================
               LOGO
           ================================================= */}
@@ -98,7 +116,6 @@ export default function Header() {
             "
             aria-label="Estanterías MSC del Sur - Inicio"
           >
-
             <Image
               src="/images/logo2026.png"
               alt="Estanterías MSC del Sur"
@@ -113,9 +130,7 @@ export default function Header() {
                 hover:scale-[1.03]
               "
             />
-
           </Link>
-
 
           {/* =================================================
               MENÚ ESCRITORIO
@@ -132,9 +147,7 @@ export default function Header() {
               xl:gap-10
             "
           >
-
             {enlaces.map(([titulo, ruta]) => (
-
               <Link
                 key={titulo}
                 href={ruta}
@@ -156,7 +169,6 @@ export default function Header() {
                   }
                 `}
               >
-
                 {titulo}
 
                 <span
@@ -178,13 +190,65 @@ export default function Header() {
                     }
                   `}
                 />
-
               </Link>
-
             ))}
-
           </nav>
 
+          {/* =================================================
+              BOTÓN CARRITO DESKTOP
+          ================================================= */}
+
+          <button
+            type="button"
+            onClick={() =>
+              setCarritoAbierto(true)
+            }
+            className={`
+              ml-auto
+              hidden
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              border
+              transition-all
+              duration-300
+              lg:inline-flex
+
+              ${
+                scroll
+                  ? "border-[#E4DED7] bg-white text-[#2C241C] hover:bg-[#F8F5F1]"
+                  : "border-white/40 bg-black/20 text-white backdrop-blur-sm hover:bg-white/10"
+              }
+            `}
+            aria-label="Abrir carrito"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+              />
+              <circle
+                cx="10"
+                cy="20"
+                r="1"
+              />
+              <circle
+                cx="18"
+                cy="20"
+                r="1"
+              />
+            </svg>
+          </button>
 
           {/* =================================================
               BOTÓN PRESUPUESTO DESKTOP
@@ -193,7 +257,7 @@ export default function Header() {
           <Link
             href="/#contact"
             className="
-              ml-auto
+              ml-3
               hidden
               rounded-full
               bg-[#A36A33]
@@ -212,12 +276,74 @@ export default function Header() {
               lg:inline-flex
               lg:items-center
               lg:justify-center
+              lg:border
+              lg:border-white/30
+              lg:bg-black/25
+              lg:backdrop-blur-xl
+              lg:hover:bg-black/35
+              lg:hover:border-white/40
               xl:px-8
             "
           >
             Solicitar presupuesto
           </Link>
 
+          {/* =================================================
+              BOTÓN CARRITO MÓVIL
+          ================================================= */}
+
+          <button
+            type="button"
+            onClick={() =>
+              setCarritoAbierto(true)
+            }
+            className={`
+              ml-auto
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              border
+              transition-all
+              duration-300
+              lg:hidden
+
+              ${
+                scroll
+                  ? "border-[#E4DED7] bg-white text-[#2C241C] shadow-sm"
+                  : "border-white/40 bg-black/20 text-white backdrop-blur-sm"
+              }
+            `}
+            aria-label="Abrir carrito"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+              />
+              <circle
+                cx="10"
+                cy="20"
+                r="1"
+              />
+              <circle
+                cx="18"
+                cy="20"
+                r="1"
+              />
+            </svg>
+          </button>
 
           {/* =================================================
               BOTÓN MENÚ MÓVIL
@@ -229,7 +355,7 @@ export default function Header() {
               setMenuAbierto((prev) => !prev)
             }
             className={`
-              ml-auto
+              ml-2
               flex
               h-11
               w-11
@@ -255,9 +381,7 @@ export default function Header() {
             }
             aria-expanded={menuAbierto}
           >
-
             <div className="relative h-5 w-6">
-
               {/* Línea superior */}
 
               <span
@@ -285,7 +409,6 @@ export default function Header() {
                   }
                 `}
               />
-
 
               {/* Línea central */}
 
@@ -315,7 +438,6 @@ export default function Header() {
                 `}
               />
 
-
               {/* Línea inferior */}
 
               <span
@@ -343,24 +465,17 @@ export default function Header() {
                   }
                 `}
               />
-
             </div>
-
           </button>
-
         </div>
-
       </motion.header>
-
 
       {/* =====================================================
           MENÚ MÓVIL
       ===================================================== */}
 
       <AnimatePresence>
-
         {menuAbierto && (
-
           <motion.div
             initial={{
               opacity: 0,
@@ -392,7 +507,6 @@ export default function Header() {
               lg:hidden
             "
           >
-
             <div
               className="
                 mx-auto
@@ -404,11 +518,8 @@ export default function Header() {
                 sm:py-5
               "
             >
-
               <nav className="flex flex-col">
-
                 {enlaces.map(([titulo, ruta]) => (
-
                   <Link
                     key={titulo}
                     href={ruta}
@@ -432,9 +543,43 @@ export default function Header() {
                   >
                     {titulo}
                   </Link>
-
                 ))}
 
+                {/* =================================================
+                    CARRITO MÓVIL
+                ================================================= */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuAbierto(false);
+                    setCarritoAbierto(true);
+                  }}
+                  className="
+                    mt-5
+                    flex
+                    min-h-[52px]
+                    items-center
+                    justify-center
+                    rounded-xl
+                    border
+                    border-[#E4DED7]
+                    bg-white
+                    px-6
+                    py-3
+                    text-center
+                    text-[15px]
+                    font-bold
+                    tracking-wide
+                    text-[#2C241C]
+                    transition-all
+                    duration-300
+                    hover:bg-[#F7F2EC]
+                    sm:text-[16px]
+                  "
+                >
+                  🛒 Ver carrito
+                </button>
 
                 {/* =================================================
                     BOTÓN PRESUPUESTO MÓVIL
@@ -446,7 +591,7 @@ export default function Header() {
                     setMenuAbierto(false)
                   }
                   className="
-                    mt-5
+                    mt-3
                     flex
                     min-h-[52px]
                     items-center
@@ -469,16 +614,22 @@ export default function Header() {
                 >
                   Solicitar presupuesto
                 </Link>
-
               </nav>
-
             </div>
-
           </motion.div>
-
         )}
-
       </AnimatePresence>
+
+      {/* =====================================================
+          CARRITO
+      ===================================================== */}
+
+      <CartDrawer
+        open={carritoAbierto}
+        onClose={() =>
+          setCarritoAbierto(false)
+        }
+      />
     </>
   );
 }
