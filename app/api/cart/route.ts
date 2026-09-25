@@ -319,6 +319,73 @@ function getUserError(
     "No se pudo actualizar el carrito.";
 }
 
+function getShopifyStoreHost(): string {
+  const host = SHOPIFY_STORE_DOMAIN
+    ?.trim()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/+$/, "");
+
+  if (!host) {
+    throw new Error(
+      "Falta el dominio de la tienda Shopify."
+    );
+  }
+
+  return host;
+}
+
+function normalizeCheckoutUrl(
+  checkoutUrl: string
+): string {
+  let url: URL;
+
+  try {
+    // El Storefront API puede devolver una URL absoluta o una ruta
+    // relativa como /cart/c/.... En ambos casos la resolvemos contra
+    // el dominio canónico de Shopify, nunca contra el dominio de Vercel.
+    url = new URL(
+      checkoutUrl,
+      `https://${getShopifyStoreHost()}`
+    );
+  } catch {
+    throw new Error(
+      "Shopify devolvió una URL de checkout inválida."
+    );
+  }
+
+  if (url.protocol !== "https:") {
+    throw new Error(
+      "Shopify devolvió una URL de checkout no segura."
+    );
+  }
+
+  // Shopify puede devolver el checkout con el dominio público
+  // configurado para la tienda. Si ese dominio apunta a Vercel,
+  // /cart/c/... termina en el 404 de Next.js. El dominio usado para
+  // la API Storefront siempre pertenece a Shopify y conserva el
+  // mismo carrito al cambiar únicamente el host.
+  url.protocol = "https:";
+  url.hostname = getShopifyStoreHost();
+  url.port = "";
+
+  return url.toString();
+}
+
+function normalizeCart(
+  cart: Cart | null | undefined
+): Cart | null {
+  if (!cart) {
+    return null;
+  }
+
+  return {
+    ...cart,
+    checkoutUrl: normalizeCheckoutUrl(
+      cart.checkoutUrl
+    ),
+  };
+}
+
 export async function POST(
   request: Request
 ) {
@@ -405,14 +472,15 @@ export async function POST(
         );
       }
 
+      const cart = normalizeCart(result.cart);
+
       return NextResponse.json({
         success: true,
-        cart: result.cart,
-        cartId: result.cart.id,
-        checkoutUrl:
-          result.cart.checkoutUrl,
+        cart,
+        cartId: cart?.id,
+        checkoutUrl: cart?.checkoutUrl,
         totalQuantity:
-          result.cart.totalQuantity,
+          cart?.totalQuantity,
       });
     }
 
@@ -466,14 +534,15 @@ export async function POST(
       );
     }
 
+    const cart = normalizeCart(result.cart);
+
     return NextResponse.json({
       success: true,
-      cart: result.cart,
-      cartId: result.cart.id,
-      checkoutUrl:
-        result.cart.checkoutUrl,
+      cart,
+      cartId: cart?.id,
+      checkoutUrl: cart?.checkoutUrl,
       totalQuantity:
-        result.cart.totalQuantity,
+        cart?.totalQuantity,
     });
   } catch (error) {
     console.error(
@@ -523,8 +592,9 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      cart:
-        data.data?.cart || null,
+      cart: normalizeCart(
+        data.data?.cart
+      ),
     });
   } catch (error) {
     console.error(
@@ -614,8 +684,9 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      cart:
-        result?.cart || null,
+      cart: normalizeCart(
+        result?.cart
+      ),
     });
   } catch (error) {
     console.error(
@@ -696,8 +767,9 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      cart:
-        result?.cart || null,
+      cart: normalizeCart(
+        result?.cart
+      ),
     });
   } catch (error) {
     console.error(
