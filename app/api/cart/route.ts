@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 const SHOPIFY_STORE_DOMAIN =
   process.env.SHOPIFY_STORE_DOMAIN;
 
+const SHOPIFY_CHECKOUT_DOMAIN =
+  process.env.SHOPIFY_CHECKOUT_DOMAIN;
+
 const SHOPIFY_STOREFRONT_PUBLIC_TOKEN =
   process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN;
 
@@ -319,19 +322,32 @@ function getUserError(
     "No se pudo actualizar el carrito.";
 }
 
-function getShopifyStoreHost(): string {
-  const host = SHOPIFY_STORE_DOMAIN
+function normalizeHost(
+  domain: string | undefined
+): string {
+  const host = domain
     ?.trim()
     .replace(/^https?:\/\//, "")
     .replace(/\/+$/, "");
 
   if (!host) {
-    throw new Error(
-      "Falta el dominio de la tienda Shopify."
-    );
+    throw new Error("Falta un dominio Shopify.");
   }
 
   return host;
+}
+
+function getShopifyStoreHost(): string {
+  return normalizeHost(
+    SHOPIFY_STORE_DOMAIN
+  );
+}
+
+function getShopifyCheckoutHost(): string {
+  return normalizeHost(
+    SHOPIFY_CHECKOUT_DOMAIN ||
+      SHOPIFY_STORE_DOMAIN
+  );
 }
 
 function normalizeCheckoutUrl(
@@ -342,10 +358,10 @@ function normalizeCheckoutUrl(
   try {
     // El Storefront API puede devolver una URL absoluta o una ruta
     // relativa como /cart/c/.... En ambos casos la resolvemos contra
-    // el dominio canónico de Shopify, nunca contra el dominio de Vercel.
+    // el dominio de checkout de Shopify, nunca contra Vercel.
     url = new URL(
       checkoutUrl,
-      `https://${getShopifyStoreHost()}`
+      `https://${getShopifyCheckoutHost()}`
     );
   } catch {
     throw new Error(
@@ -359,13 +375,13 @@ function normalizeCheckoutUrl(
     );
   }
 
-  // Shopify puede devolver el checkout con el dominio público
-  // configurado para la tienda. Si ese dominio apunta a Vercel,
-  // /cart/c/... termina en el 404 de Next.js. El dominio usado para
-  // la API Storefront siempre pertenece a Shopify y conserva el
-  // mismo carrito al cambiar únicamente el host.
+  // Shopify puede redirigir el dominio principal de la tienda al
+  // dominio público configurado. Si ese dominio apunta a Vercel,
+  // /cart/c/... termina en un 404. El dominio de checkout conectado
+  // en Shopify conserva el mismo carrito al cambiar únicamente
+  // el host.
   url.protocol = "https:";
-  url.hostname = getShopifyStoreHost();
+  url.hostname = getShopifyCheckoutHost();
   url.port = "";
 
   return url.toString();
