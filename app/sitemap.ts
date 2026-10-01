@@ -16,9 +16,6 @@ type ShopifySitemapResource = {
 type ShopifySitemapResponse = {
   data?: {
     sitemap?: {
-      pagesCount?: {
-        count: number;
-      };
       resources?: {
         hasNextPage: boolean;
         items: ShopifySitemapResource[];
@@ -38,7 +35,17 @@ async function getShopifySitemapResources(
     !SHOPIFY_STOREFRONT_PUBLIC_TOKEN
   ) {
     console.error(
-      "Faltan SHOPIFY_STORE_DOMAIN o SHOPIFY_STOREFRONT_PUBLIC_TOKEN"
+      "❌ Faltan las variables de Shopify:"
+    );
+
+    console.error(
+      "SHOPIFY_STORE_DOMAIN:",
+      !!SHOPIFY_STORE_DOMAIN
+    );
+
+    console.error(
+      "SHOPIFY_STOREFRONT_PUBLIC_TOKEN:",
+      !!SHOPIFY_STOREFRONT_PUBLIC_TOKEN
     );
 
     return [];
@@ -47,12 +54,12 @@ async function getShopifySitemapResources(
   const endpoint = `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
 
   const query = `
-    query ShopifySitemap($type: SitemapType!) {
+    query ShopifySitemap(
+      $type: SitemapType!
+      $page: Int!
+    ) {
       sitemap(type: $type) {
-        pagesCount {
-          count
-        }
-        resources {
+        resources(page: $page) {
           hasNextPage
           items {
             handle
@@ -69,62 +76,88 @@ async function getShopifySitemapResources(
   let hasNextPage = true;
 
   while (hasNextPage) {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token":
-          SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          type,
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token":
+            SHOPIFY_STOREFRONT_PUBLIC_TOKEN,
         },
-        page,
-      }),
-      next: {
-        revalidate: 3600,
-      },
-    });
+        body: JSON.stringify({
+          query,
+          variables: {
+            type,
+            page,
+          },
+        }),
+        next: {
+          revalidate: 3600,
+        },
+      });
 
-    if (!response.ok) {
-      console.error(
-        `Shopify sitemap ${type}: HTTP ${response.status}`
+      if (!response.ok) {
+        console.error(
+          `❌ Shopify sitemap ${type}: HTTP ${response.status}`
+        );
+
+        break;
+      }
+
+      const json =
+        (await response.json()) as ShopifySitemapResponse;
+
+      if (json.errors?.length) {
+        console.error(
+          `❌ Error de Shopify sitemap ${type}:`,
+          JSON.stringify(json.errors, null, 2)
+        );
+
+        break;
+      }
+
+      const sitemap = json.data?.sitemap;
+
+      if (!sitemap?.resources) {
+        console.error(
+          `❌ Shopify no devolvió recursos para ${type}`
+        );
+
+        break;
+      }
+
+      resources.push(
+        ...sitemap.resources.items
       );
-      break;
-    }
 
-    const json =
-      (await response.json()) as ShopifySitemapResponse;
+      hasNextPage =
+        sitemap.resources.hasNextPage;
 
-    if (json.errors?.length) {
+      page++;
+    } catch (error) {
       console.error(
-        `Shopify sitemap ${type}:`,
-        json.errors
+        `❌ Error obteniendo sitemap ${type}:`,
+        error
       );
+
       break;
     }
-
-    const sitemap = json.data?.sitemap;
-
-    if (!sitemap?.resources) {
-      break;
-    }
-
-    resources.push(...sitemap.resources.items);
-
-    hasNextPage = sitemap.resources.hasNextPage;
-    page++;
   }
+
+  console.log(
+    `✅ Shopify ${type}: ${resources.length} recursos encontrados`
+  );
 
   return resources;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   /*
-   * Páginas estáticas de tu web
+   * ==========================================
+   * PÁGINAS ESTÁTICAS
+   * ==========================================
    */
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
@@ -132,36 +165,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1,
     },
+
     {
       url: `${BASE_URL}/catalogo`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
     },
+
     {
       url: `${BASE_URL}/presupuesto`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
+
+    {
+      url: `${BASE_URL}/proyectos`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+
     {
       url: `${BASE_URL}/aviso-legal`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
+
     {
       url: `${BASE_URL}/politica-privacidad`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
+
     {
       url: `${BASE_URL}/politica-cookies`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
+
     {
       url: `${BASE_URL}/condiciones-compra`,
       lastModified: new Date(),
@@ -171,64 +217,84 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   /*
-   * Obtener categorías de Shopify
+   * ==========================================
+   * SHOPIFY
+   * ==========================================
    */
-  const collections = await getShopifySitemapResources(
-    "COLLECTION"
-  );
+
+  const [collections, products] =
+    await Promise.all([
+      getShopifySitemapResources("COLLECTION"),
+      getShopifySitemapResources("PRODUCT"),
+    ]);
 
   /*
-   * Obtener productos de Shopify
-   */
-  const products = await getShopifySitemapResources(
-    "PRODUCT"
-  );
-
-  /*
-   * Categorías
+   * ==========================================
+   * CATEGORÍAS / COLECCIONES
    *
    * Ejemplo:
    * /catalogo/perchas
    * /catalogo/etiquetas
+   * ==========================================
    */
+
   const collectionPages: MetadataRoute.Sitemap =
     collections.map((collection) => ({
       url: `${BASE_URL}/catalogo/${collection.handle}`,
-      lastModified: new Date(collection.updatedAt),
+      lastModified: new Date(
+        collection.updatedAt
+      ),
       changeFrequency: "daily",
       priority: 0.8,
     }));
 
   /*
-   * Productos
+   * ==========================================
+   * PRODUCTOS
    *
-   * IMPORTANTE:
-   * Esta ruta corresponde a la estructura:
-   *
-   * /producto/[handle]
+   * Actualmente:
+   * /producto/nombre-del-producto
+   * ==========================================
    */
+
   const productPages: MetadataRoute.Sitemap =
     products.map((product) => ({
       url: `${BASE_URL}/producto/${product.handle}`,
-      lastModified: new Date(product.updatedAt),
+      lastModified: new Date(
+        product.updatedAt
+      ),
       changeFrequency: "weekly",
       priority: 0.7,
     }));
 
   /*
-   * Eliminar posibles URLs duplicadas
+   * ==========================================
+   * UNIR TODO
+   * ==========================================
    */
-  const allUrls = [
+
+  const allPages: MetadataRoute.Sitemap = [
     ...staticPages,
     ...collectionPages,
     ...productPages,
   ];
 
-  const uniqueUrls = Array.from(
+  /*
+   * Eliminar URLs duplicadas
+   */
+
+  const uniquePages = Array.from(
     new Map(
-      allUrls.map((item) => [item.url, item])
+      allPages.map((page) => [
+        page.url,
+        page,
+      ])
     ).values()
   );
 
-  return uniqueUrls;
+  console.log(
+    `🗺️ Sitemap final: ${uniquePages.length} URLs`
+  );
+
+  return uniquePages;
 }
