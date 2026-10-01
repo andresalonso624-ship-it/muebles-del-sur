@@ -3,33 +3,106 @@ import { NextResponse } from "next/server";
 const SHOPIFY_STORE_DOMAIN =
   process.env.SHOPIFY_STORE_DOMAIN;
 
-const SHOPIFY_CHECKOUT_DOMAIN =
-  process.env.SHOPIFY_CHECKOUT_DOMAIN;
-
 const SHOPIFY_STOREFRONT_PUBLIC_TOKEN =
   process.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN;
 
 const SHOPIFY_API_VERSION = "2026-07";
 
+/*
+ * Dominio que debe utilizar Shopify para el checkout.
+ *
+ * Si creamos la variable en Vercel:
+ *
+ * SHOPIFY_CHECKOUT_DOMAIN=checkout.estanteriasmsc.com
+ *
+ * se utilizará ese dominio.
+ *
+ * Si todavía no existe la variable, usamos
+ * checkout.estanteriasmsc.com como respaldo.
+ */
+const SHOPIFY_CHECKOUT_DOMAIN =
+  process.env.SHOPIFY_CHECKOUT_DOMAIN ||
+  "checkout.estanteriasmsc.com";
+
+/*
+ * Shopify devuelve una checkoutUrl.
+ *
+ * El problema que estamos corrigiendo es que esa URL
+ * puede terminar utilizando nuestro dominio de Vercel:
+ *
+ * https://estanteriasmsc.com/cart/c/...
+ *
+ * En ese caso Next.js intenta buscar /cart/c/...
+ * y devuelve 404.
+ *
+ * Aquí conservamos todo el path y parámetros que Shopify
+ * genera, pero cambiamos únicamente el dominio.
+ */
+function normalizeCheckoutUrl(
+  checkoutUrl: string
+) {
+  try {
+    const url = new URL(checkoutUrl);
+
+    url.protocol = "https:";
+    url.hostname = SHOPIFY_CHECKOUT_DOMAIN;
+
+    return url.toString();
+  } catch {
+    return checkoutUrl;
+  }
+}
+
+/*
+ * Normaliza el objeto completo del carrito.
+ *
+ * Esto es importante porque el carrito se devuelve desde:
+ *
+ * POST
+ * GET
+ * PATCH
+ * DELETE
+ *
+ * y cualquiera de esas respuestas puede contener
+ * checkoutUrl.
+ */
+function normalizeCart(cart: Cart | null) {
+  if (!cart) {
+    return null;
+  }
+
+  return {
+    ...cart,
+    checkoutUrl: normalizeCheckoutUrl(
+      cart.checkoutUrl
+    ),
+  };
+}
+
 interface CartLine {
   id: string;
   quantity: number;
+
   cost: {
     totalAmount: {
       amount: string;
       currencyCode: string;
     };
   };
+
   merchandise: {
     id: string;
     title: string;
+
     price: {
       amount: string;
       currencyCode: string;
     };
+
     product: {
       title: string;
       handle: string;
+
       featuredImage: {
         url: string;
         altText: string | null;
@@ -40,18 +113,23 @@ interface CartLine {
 
 interface Cart {
   id: string;
+
   checkoutUrl: string;
+
   totalQuantity: number;
+
   cost: {
     subtotalAmount: {
       amount: string;
       currencyCode: string;
     };
+
     totalAmount: {
       amount: string;
       currencyCode: string;
     };
   };
+
   lines: {
     edges: {
       node: CartLine;
@@ -63,6 +141,7 @@ interface ShopifyResponse {
   data?: {
     cartCreate?: {
       cart: Cart | null;
+
       userErrors: {
         field: string[] | null;
         message: string;
@@ -71,6 +150,7 @@ interface ShopifyResponse {
 
     cartLinesAdd?: {
       cart: Cart | null;
+
       userErrors: {
         field: string[] | null;
         message: string;
@@ -79,6 +159,7 @@ interface ShopifyResponse {
 
     cartLinesUpdate?: {
       cart: Cart | null;
+
       userErrors: {
         field: string[] | null;
         message: string;
@@ -87,6 +168,7 @@ interface ShopifyResponse {
 
     cartLinesRemove?: {
       cart: Cart | null;
+
       userErrors: {
         field: string[] | null;
         message: string;
@@ -318,89 +400,19 @@ function getUserError(
     return null;
   }
 
-  return errors[0]?.message ||
-    "No se pudo actualizar el carrito.";
-}
-
-function normalizeHost(
-  domain: string | undefined
-): string {
-  const host = domain
-    ?.trim()
-    .replace(/^https?:\/\//, "")
-    .replace(/\/+$/, "");
-
-  if (!host) {
-    throw new Error("Falta un dominio Shopify.");
-  }
-
-  return host;
-}
-
-function getShopifyStoreHost(): string {
-  return normalizeHost(
-    SHOPIFY_STORE_DOMAIN
+  return (
+    errors[0]?.message ||
+    "No se pudo actualizar el carrito."
   );
 }
 
-function getShopifyCheckoutHost(): string {
-  return normalizeHost(
-    SHOPIFY_CHECKOUT_DOMAIN ||
-      SHOPIFY_STORE_DOMAIN
-  );
-}
-
-function normalizeCheckoutUrl(
-  checkoutUrl: string
-): string {
-  let url: URL;
-
-  try {
-    // El Storefront API puede devolver una URL absoluta o una ruta
-    // relativa como /cart/c/.... En ambos casos la resolvemos contra
-    // el dominio de checkout de Shopify, nunca contra Vercel.
-    url = new URL(
-      checkoutUrl,
-      `https://${getShopifyCheckoutHost()}`
-    );
-  } catch {
-    throw new Error(
-      "Shopify devolvió una URL de checkout inválida."
-    );
-  }
-
-  if (url.protocol !== "https:") {
-    throw new Error(
-      "Shopify devolvió una URL de checkout no segura."
-    );
-  }
-
-  // Shopify puede redirigir el dominio principal de la tienda al
-  // dominio público configurado. Si ese dominio apunta a Vercel,
-  // /cart/c/... termina en un 404. El dominio de checkout conectado
-  // en Shopify conserva el mismo carrito al cambiar únicamente
-  // el host.
-  url.protocol = "https:";
-  url.hostname = getShopifyCheckoutHost();
-  url.port = "";
-
-  return url.toString();
-}
-
-function normalizeCart(
-  cart: Cart | null | undefined
-): Cart | null {
-  if (!cart) {
-    return null;
-  }
-
-  return {
-    ...cart,
-    checkoutUrl: normalizeCheckoutUrl(
-      cart.checkoutUrl
-    ),
-  };
-}
+/*
+ * =========================================================
+ * POST
+ * =========================================================
+ *
+ * Añadir producto al carrito.
+ */
 
 export async function POST(
   request: Request
@@ -448,6 +460,7 @@ export async function POST(
         CART_LINES_ADD_MUTATION,
         {
           cartId,
+
           lines: [
             {
               merchandiseId: variantId,
@@ -488,15 +501,21 @@ export async function POST(
         );
       }
 
-      const cart = normalizeCart(result.cart);
+      const cart =
+        normalizeCart(result.cart);
 
       return NextResponse.json({
         success: true,
+
         cart,
+
         cartId: cart?.id,
-        checkoutUrl: cart?.checkoutUrl,
+
+        checkoutUrl:
+          cart?.checkoutUrl,
+
         totalQuantity:
-          cart?.totalQuantity,
+          cart?.totalQuantity || 0,
       });
     }
 
@@ -550,15 +569,21 @@ export async function POST(
       );
     }
 
-    const cart = normalizeCart(result.cart);
+    const cart =
+      normalizeCart(result.cart);
 
     return NextResponse.json({
       success: true,
+
       cart,
+
       cartId: cart?.id,
-      checkoutUrl: cart?.checkoutUrl,
+
+      checkoutUrl:
+        cart?.checkoutUrl,
+
       totalQuantity:
-        cart?.totalQuantity,
+        cart?.totalQuantity || 0,
     });
   } catch (error) {
     console.error(
@@ -580,6 +605,18 @@ export async function POST(
   }
 }
 
+/*
+ * =========================================================
+ * GET
+ * =========================================================
+ *
+ * Obtener carrito.
+ *
+ * IMPORTANTE:
+ * Aquí estaba uno de los problemas.
+ * Ahora también normalizamos checkoutUrl.
+ */
+
 export async function GET(
   request: Request
 ) {
@@ -591,11 +628,9 @@ export async function GET(
       searchParams.get("cartId");
 
     if (!cartId) {
-      return NextResponse.json(
-        {
-          cart: null,
-        }
-      );
+      return NextResponse.json({
+        cart: null,
+      });
     }
 
     const data =
@@ -606,11 +641,14 @@ export async function GET(
         }
       );
 
+    const cart =
+      normalizeCart(
+        data.data?.cart || null
+      );
+
     return NextResponse.json({
       success: true,
-      cart: normalizeCart(
-        data.data?.cart
-      ),
+      cart,
     });
   } catch (error) {
     console.error(
@@ -629,6 +667,14 @@ export async function GET(
     );
   }
 }
+
+/*
+ * =========================================================
+ * PATCH
+ * =========================================================
+ *
+ * Cambiar cantidad.
+ */
 
 export async function PATCH(
   request: Request
@@ -698,11 +744,14 @@ export async function PATCH(
       );
     }
 
+    const cart =
+      normalizeCart(
+        result?.cart || null
+      );
+
     return NextResponse.json({
       success: true,
-      cart: normalizeCart(
-        result?.cart
-      ),
+      cart,
     });
   } catch (error) {
     console.error(
@@ -721,6 +770,14 @@ export async function PATCH(
     );
   }
 }
+
+/*
+ * =========================================================
+ * DELETE
+ * =========================================================
+ *
+ * Eliminar producto.
+ */
 
 export async function DELETE(
   request: Request
@@ -781,11 +838,14 @@ export async function DELETE(
       );
     }
 
+    const cart =
+      normalizeCart(
+        result?.cart || null
+      );
+
     return NextResponse.json({
       success: true,
-      cart: normalizeCart(
-        result?.cart
-      ),
+      cart,
     });
   } catch (error) {
     console.error(
