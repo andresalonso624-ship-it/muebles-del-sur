@@ -9,37 +9,137 @@ import CartDrawer from "./CartDrawer";
 export default function Header() {
   const [scroll, setScroll] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [carritoAbierto, setCarritoAbierto] = useState(false);
+  const [carritoAbierto, setCarritoAbierto] =
+    useState(false);
+
+  const [cantidadCarrito, setCantidadCarrito] =
+    useState(0);
+
+  /*
+   * =========================================================
+   * SCROLL
+   * =========================================================
+   */
 
   useEffect(() => {
     const onScroll = () => {
       setScroll(window.scrollY > 40);
     };
 
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener(
+      "scroll",
+      onScroll
+    );
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
     };
   }, []);
 
+  /*
+   * =========================================================
+   * CARGAR CANTIDAD DEL CARRITO
+   * =========================================================
+   */
+
+  const cargarCantidadCarrito = async () => {
+    try {
+      const cartId =
+        localStorage.getItem(
+          "shopify-cart-id"
+        );
+
+      if (!cartId) {
+        setCantidadCarrito(0);
+        return;
+      }
+
+      const response = await fetch(
+        `/api/cart?cartId=${encodeURIComponent(
+          cartId
+        )}`,
+        {
+          cache: "no-store",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCantidadCarrito(0);
+        return;
+      }
+
+      setCantidadCarrito(
+        data.cart?.totalQuantity || 0
+      );
+    } catch (error) {
+      console.error(
+        "Error obteniendo cantidad del carrito:",
+        error
+      );
+    }
+  };
+
+  /*
+   * =========================================================
+   * EVENTOS DEL CARRITO
+   * =========================================================
+   */
+
   useEffect(() => {
+    cargarCantidadCarrito();
+
+    const actualizarCarrito = () => {
+      cargarCantidadCarrito();
+    };
+
     const abrirCarrito = () => {
+      cargarCantidadCarrito();
       setCarritoAbierto(true);
     };
+
+    window.addEventListener(
+      "cartUpdated",
+      actualizarCarrito
+    );
 
     window.addEventListener(
       "openCart",
       abrirCarrito
     );
 
+    window.addEventListener(
+      "storage",
+      actualizarCarrito
+    );
+
     return () => {
+      window.removeEventListener(
+        "cartUpdated",
+        actualizarCarrito
+      );
+
       window.removeEventListener(
         "openCart",
         abrirCarrito
       );
+
+      window.removeEventListener(
+        "storage",
+        actualizarCarrito
+      );
     };
   }, []);
+
+  /*
+   * =========================================================
+   * ENLACES
+   * =========================================================
+   */
 
   const enlaces = [
     ["Servicios", "/#services"],
@@ -48,6 +148,70 @@ export default function Header() {
     ["Contacto", "/#contact"],
   ];
 
+  /*
+   * =========================================================
+   * ICONO CARRITO
+   * =========================================================
+   */
+
+  const IconoCarrito = () => (
+    <div className="relative">
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        className="h-5 w-5"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+        />
+
+        <circle
+          cx="10"
+          cy="20"
+          r="1"
+        />
+
+        <circle
+          cx="18"
+          cy="20"
+          r="1"
+        />
+      </svg>
+
+      {cantidadCarrito > 0 && (
+        <span
+          className="
+            absolute
+            -right-2
+            -top-2
+            flex
+            min-h-5
+            min-w-5
+            items-center
+            justify-center
+            rounded-full
+            bg-[#A36A33]
+            px-1
+            text-[10px]
+            font-bold
+            text-white
+          "
+        >
+          {cantidadCarrito > 99
+            ? "99+"
+            : cantidadCarrito}
+        </span>
+      )}
+
+    </div>
+  );
+
   return (
     <>
       {/* =====================================================
@@ -55,8 +219,14 @@ export default function Header() {
       ===================================================== */}
 
       <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{
+          y: -80,
+          opacity: 0,
+        }}
+        animate={{
+          y: 0,
+          opacity: 1,
+        }}
         transition={{
           duration: 0.7,
           ease: "easeOut",
@@ -76,9 +246,6 @@ export default function Header() {
           }
         `}
       >
-        {/* =================================================
-            CONTENEDOR PRINCIPAL
-        ================================================= */}
 
         <div
           className="
@@ -94,9 +261,8 @@ export default function Header() {
             lg:px-10
           "
         >
-          {/* =================================================
-              LOGO
-          ================================================= */}
+
+          {/* LOGO */}
 
           <Link
             href="/"
@@ -114,14 +280,18 @@ export default function Header() {
               lg:h-[82px]
               lg:w-[200px]
             "
-            aria-label="Estanterías MSC del Sur - Inicio"
+            aria-label="Estanterías MSC - Inicio"
           >
             <Image
               src="/images/logo2026.png"
-              alt="Estanterías MSC del Sur"
+              alt="Estanterías MSC"
               fill
               priority
-              sizes="(max-width: 640px) 150px, (max-width: 1024px) 170px, 200px"
+              sizes="
+                (max-width: 640px) 150px,
+                (max-width: 1024px) 170px,
+                200px
+              "
               className="
                 object-contain
                 object-center
@@ -132,9 +302,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* =================================================
-              MENÚ ESCRITORIO
-          ================================================= */}
+          {/* MENÚ DESKTOP */}
 
           <nav
             className="
@@ -147,56 +315,53 @@ export default function Header() {
               xl:gap-10
             "
           >
-            {enlaces.map(([titulo, ruta]) => (
-              <Link
-                key={titulo}
-                href={ruta}
-                className={`
-                  group
-                  relative
-                  px-1
-                  py-3
-                  text-[15px]
-                  font-bold
-                  tracking-[-0.01em]
-                  transition-colors
-                  duration-300
-
-                  ${
-                    scroll
-                      ? "text-[#2C241C] hover:text-[#A36A33]"
-                      : "text-white hover:text-[#D49A32]"
-                  }
-                `}
-              >
-                {titulo}
-
-                <span
+            {enlaces.map(
+              ([titulo, ruta]) => (
+                <Link
+                  key={titulo}
+                  href={ruta}
                   className={`
-                    absolute
-                    bottom-1
-                    left-0
-                    h-[2px]
-                    w-0
-                    rounded-full
-                    transition-all
+                    group
+                    relative
+                    px-1
+                    py-3
+                    text-[15px]
+                    font-bold
+                    transition-colors
                     duration-300
-                    group-hover:w-full
-
                     ${
                       scroll
-                        ? "bg-[#A36A33]"
-                        : "bg-[#D49A32]"
+                        ? "text-[#2C241C] hover:text-[#A36A33]"
+                        : "text-white hover:text-[#D49A32]"
                     }
                   `}
-                />
-              </Link>
-            ))}
+                >
+                  {titulo}
+
+                  <span
+                    className={`
+                      absolute
+                      bottom-1
+                      left-0
+                      h-[2px]
+                      w-0
+                      rounded-full
+                      transition-all
+                      duration-300
+                      group-hover:w-full
+                      ${
+                        scroll
+                          ? "bg-[#A36A33]"
+                          : "bg-[#D49A32]"
+                      }
+                    `}
+                  />
+                </Link>
+              )
+            )}
           </nav>
 
-          {/* =================================================
-              BOTÓN CARRITO DESKTOP
-          ================================================= */}
+          {/* CARRITO DESKTOP */}
 
           <button
             type="button"
@@ -215,7 +380,6 @@ export default function Header() {
               transition-all
               duration-300
               lg:inline-flex
-
               ${
                 scroll
                   ? "border-[#E4DED7] bg-white text-[#2C241C] hover:bg-[#F8F5F1]"
@@ -224,73 +388,10 @@ export default function Header() {
             `}
             aria-label="Abrir carrito"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
-              />
-              <circle
-                cx="10"
-                cy="20"
-                r="1"
-              />
-              <circle
-                cx="18"
-                cy="20"
-                r="1"
-              />
-            </svg>
+            <IconoCarrito />
           </button>
 
-          {/* =================================================
-              BOTÓN PRESUPUESTO DESKTOP
-          ================================================= */}
-
-          <Link
-            href="/#contact"
-            className="
-              ml-3
-              hidden
-              rounded-full
-              bg-[#A36A33]
-              px-7
-              py-3.5
-              text-[14px]
-              font-bold
-              tracking-[-0.01em]
-              text-white
-              shadow-lg
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-[#8B5A2B]
-              hover:shadow-xl
-              lg:inline-flex
-              lg:items-center
-              lg:justify-center
-              lg:border
-              lg:border-white/30
-              lg:bg-black/25
-              lg:backdrop-blur-xl
-              lg:hover:bg-black/35
-              lg:hover:border-white/40
-              xl:px-8
-            "
-          >
-            Solicitar presupuesto
-          </Link>
-
-          {/* =================================================
-              BOTÓN CARRITO MÓVIL
-          ================================================= */}
+          {/* CARRITO MÓVIL */}
 
           <button
             type="button"
@@ -310,7 +411,6 @@ export default function Header() {
               transition-all
               duration-300
               lg:hidden
-
               ${
                 scroll
                   ? "border-[#E4DED7] bg-white text-[#2C241C] shadow-sm"
@@ -319,40 +419,17 @@ export default function Header() {
             `}
             aria-label="Abrir carrito"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
-              />
-              <circle
-                cx="10"
-                cy="20"
-                r="1"
-              />
-              <circle
-                cx="18"
-                cy="20"
-                r="1"
-              />
-            </svg>
+            <IconoCarrito />
           </button>
 
-          {/* =================================================
-              BOTÓN MENÚ MÓVIL
-          ================================================= */}
+          {/* MENÚ MÓVIL */}
 
           <button
             type="button"
             onClick={() =>
-              setMenuAbierto((prev) => !prev)
+              setMenuAbierto(
+                (prev) => !prev
+              )
             }
             className={`
               ml-2
@@ -364,13 +441,10 @@ export default function Header() {
               justify-center
               rounded-xl
               border
-              transition-all
-              duration-300
               lg:hidden
-
               ${
                 scroll
-                  ? "border-[#E4DED7] bg-white shadow-sm"
+                  ? "border-[#E4DED7] bg-white"
                   : "border-white/40 bg-black/20 backdrop-blur-sm"
               }
             `}
@@ -379,29 +453,22 @@ export default function Header() {
                 ? "Cerrar menú"
                 : "Abrir menú"
             }
-            aria-expanded={menuAbierto}
           >
             <div className="relative h-5 w-6">
-              {/* Línea superior */}
 
               <span
                 className={`
                   absolute
                   left-0
                   top-0
-                  block
                   h-[2px]
                   w-6
                   rounded-full
-                  transition-all
-                  duration-300
-
                   ${
                     scroll
                       ? "bg-[#2C241C]"
                       : "bg-white"
                   }
-
                   ${
                     menuAbierto
                       ? "top-2 rotate-45"
@@ -410,26 +477,19 @@ export default function Header() {
                 `}
               />
 
-              {/* Línea central */}
-
               <span
                 className={`
                   absolute
                   left-0
                   top-2
-                  block
                   h-[2px]
                   w-6
                   rounded-full
-                  transition-all
-                  duration-300
-
                   ${
                     scroll
                       ? "bg-[#2C241C]"
                       : "bg-white"
                   }
-
                   ${
                     menuAbierto
                       ? "opacity-0"
@@ -438,26 +498,19 @@ export default function Header() {
                 `}
               />
 
-              {/* Línea inferior */}
-
               <span
                 className={`
                   absolute
                   left-0
                   top-4
-                  block
                   h-[2px]
                   w-6
                   rounded-full
-                  transition-all
-                  duration-300
-
                   ${
                     scroll
                       ? "bg-[#2C241C]"
                       : "bg-white"
                   }
-
                   ${
                     menuAbierto
                       ? "top-2 -rotate-45"
@@ -465,8 +518,10 @@ export default function Header() {
                   }
                 `}
               />
+
             </div>
           </button>
+
         </div>
       </motion.header>
 
@@ -491,7 +546,6 @@ export default function Header() {
             }}
             transition={{
               duration: 0.25,
-              ease: "easeOut",
             }}
             className="
               fixed
@@ -507,47 +561,33 @@ export default function Header() {
               lg:hidden
             "
           >
-            <div
-              className="
-                mx-auto
-                w-full
-                max-w-7xl
-                px-5
-                py-4
-                sm:px-6
-                sm:py-5
-              "
-            >
-              <nav className="flex flex-col">
-                {enlaces.map(([titulo, ruta]) => (
-                  <Link
-                    key={titulo}
-                    href={ruta}
-                    onClick={() =>
-                      setMenuAbierto(false)
-                    }
-                    className="
-                      border-b
-                      border-[#EEE9E3]
-                      py-4
-                      text-[16px]
-                      font-bold
-                      tracking-[-0.01em]
-                      text-[#2C241C]
-                      transition-colors
-                      duration-200
-                      hover:text-[#A36A33]
-                      sm:py-5
-                      sm:text-[17px]
-                    "
-                  >
-                    {titulo}
-                  </Link>
-                ))}
 
-                {/* =================================================
-                    CARRITO MÓVIL
-                ================================================= */}
+            <div className="mx-auto w-full max-w-7xl px-5 py-4">
+
+              <nav className="flex flex-col">
+
+                {enlaces.map(
+                  ([titulo, ruta]) => (
+                    <Link
+                      key={titulo}
+                      href={ruta}
+                      onClick={() =>
+                        setMenuAbierto(false)
+                      }
+                      className="
+                        border-b
+                        border-[#EEE9E3]
+                        py-4
+                        text-[16px]
+                        font-bold
+                        text-[#2C241C]
+                        hover:text-[#A36A33]
+                      "
+                    >
+                      {titulo}
+                    </Link>
+                  )
+                )}
 
                 <button
                   type="button"
@@ -570,52 +610,19 @@ export default function Header() {
                     text-center
                     text-[15px]
                     font-bold
-                    tracking-wide
                     text-[#2C241C]
-                    transition-all
-                    duration-300
                     hover:bg-[#F7F2EC]
-                    sm:text-[16px]
                   "
                 >
                   🛒 Ver carrito
+                  {cantidadCarrito > 0 &&
+                    ` (${cantidadCarrito})`}
                 </button>
 
-                {/* =================================================
-                    BOTÓN PRESUPUESTO MÓVIL
-                ================================================= */}
-
-                <Link
-                  href="/#contact"
-                  onClick={() =>
-                    setMenuAbierto(false)
-                  }
-                  className="
-                    mt-3
-                    flex
-                    min-h-[52px]
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-[#A36A33]
-                    px-6
-                    py-3
-                    text-center
-                    text-[15px]
-                    font-bold
-                    tracking-wide
-                    text-white
-                    shadow-md
-                    transition-all
-                    duration-300
-                    hover:bg-[#8B5A2B]
-                    sm:text-[16px]
-                  "
-                >
-                  Solicitar presupuesto
-                </Link>
               </nav>
+
             </div>
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -630,6 +637,7 @@ export default function Header() {
           setCarritoAbierto(false)
         }
       />
+
     </>
   );
 }
